@@ -151,7 +151,7 @@ export class EditorComponent implements OnInit {
   }
 
   Compilar(index:any){
-    this.servicio.post('http://localhost:3000/backend/analizar' ,this.tabs[index]).subscribe(result => {
+    this.servicio.post('http://localhost:3000/analizar' ,this.tabs[index]).subscribe(result => {
       console.log(result);
     });
   }
