@@ -1,5 +1,5 @@
 reservadas = {
-    'string' : 'STRING',
+    'String' : 'STRING',
     'i64' : 'I64',
     'f64' : 'F64',
     'bool' : 'BOOL',
@@ -116,7 +116,7 @@ t_ignore = r' '
 def t_IDENTIFICADOR(t):
     r'[a-zA-Z0-9\_]+([a-zA-Z0-9\_]*[a-zA-Z0-9]+|[a-zA-Z0-9]+)'
     try:
-        t.type = reservadas.get(t.value.lower(), 'IDENTIFICADOR')
+        t.type = reservadas.get(t.value, 'IDENTIFICADOR')
     except ValueError:
         print("EL VALOR INGRESADO NO PUEDE SER UN IDENTIFICADOR")
         t.value='ERROR'

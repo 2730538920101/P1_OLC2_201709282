@@ -126,7 +126,7 @@ export class EditorComponent implements OnInit {
 
   GuardarArchivo(index:any){
     try {
-      let nombre = this.tabs[index].nombre + ".sc";
+      let nombre = this.tabs[index].nombre + ".txt";
       let content = this.tabs[index].code;
       let type = "text/plain";
       if(this.tabs[index].code != ""){
@@ -152,7 +152,7 @@ export class EditorComponent implements OnInit {
 
   Compilar(index:any){
     this.servicio.post('http://localhost:3000/analizar' ,this.tabs[index]).subscribe(result => {
-      console.log(result);
+      this.console = this.console + result.message + "\n"
     });
   }
  
