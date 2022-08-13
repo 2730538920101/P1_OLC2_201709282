@@ -155,6 +155,10 @@ export class EditorComponent implements OnInit {
       this.console = this.console + result.message + "\n"
     });
   }
+
+  Limpiar(){
+    this.console = ""
+  }
  
   /*
   GenerarErrores(){

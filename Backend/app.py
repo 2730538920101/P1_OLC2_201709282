@@ -1,8 +1,9 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-import ply.lex as lex
-from analizador.parser.gramatica import *
-lexer = lex.lex()
+import analizador.gramatica
+from  analizador.symbol.environment import Entorno 
+
+
 
 app = Flask(__name__)
 CORS(app)
@@ -15,14 +16,19 @@ def ping():
 def Analizar():
     aux = request.json
     entrada = aux['code']
-    lexer.input(entrada) 
-    while True:
-        tok = lexer.token()
-        if not tok: 
-            break      # No more input
-        print(tok)   
-    print(entrada)
-    return jsonify({"message":"SUCCESS"})
+    #analizador.gramatica.lexer.input(entrada) 
+    resp = analizador.gramatica.parser.parse(entrada)
+    env = Entorno()
+    for elemento in resp:
+        ejec = elemento.Ejecutar(env)
+        print(ejec.value)
+    #while True:
+    #    tok = analizador.gramatica.lexer.token()
+    #    if not tok: 
+    #        break      # No more input
+    #    print(tok)   
+    print("SATISFACTORY ANALYSIS")
+    return jsonify({"message":"SATISFACTORY ANALYSIS"})
 
 if __name__ == '__main__':
     app.run(debug=True, port=3000)
