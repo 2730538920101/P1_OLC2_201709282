@@ -19,7 +19,7 @@ class Relational(Expresion):
         self.tipoOp = tipoOp
 
     def Ejecutar(self, environment):
-        print("EJECUTANDO UNA EXPRESION RELACIONAL")
+        print("EJECUTANDO RELATIONAL")
         leftvalue = self.valor1.Ejecutar(environment)
         rightvalue = self.valor2.Ejecutar(environment)
         resultado = Retorno()

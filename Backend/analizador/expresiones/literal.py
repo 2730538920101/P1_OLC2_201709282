@@ -1,3 +1,4 @@
+from mimetypes import init
 from ..abstract.expresiones import *
 from ..abstract.retorno import *
 
@@ -8,23 +9,24 @@ class Literal(Expresion):
         self.tipado = tipado
     
     def Ejecutar(self, environment):
+        print("EJECUTANDO LITERAL")
         aux = Retorno()
         if self.tipado.value[0] == 0:
-            aux.setReturnValue(self.valor, Type.I64)
+            aux.__init__(self.valor, Type.I64)
         elif self.tipado.value[0] == 1:
-            aux.setReturnValue(self.valor, Type.F64)
+            aux.__init__(self.valor, Type.F64)
         elif self.tipado.value[0] == 2:
-            aux.setReturnValue(self.valor, Type.CHAR)
+            aux.__init__(self.valor, Type.CHAR)
         elif self.tipado.value[0] == 3:
-            aux.setReturnValue(self.valor, Type.STRING)
+            aux.__init__(self.valor, Type.STRING)
         elif self.tipado.value[0] == 4:
-            aux.setReturnValue(self.valor, Type.STR)
+            aux.__init__(self.valor, Type.STR)
         elif self.tipado.value[0] == 5:
-            aux.setReturnValue(self.valor, Type.BOOL) 
+            aux.__init__(self.valor, Type.BOOL) 
         elif self.tipado.value[0] == 6:
-            aux.setReturnValue(self.valor, Type.USIZE)
+            aux.__init__(self.valor, Type.USIZE)
         elif self.tipado.value[0] == 7:
-            aux.setReturnValue(self.valor, Type.STRUCT)
+            aux.__init__(self.valor, Type.STRUCT)
         else:
-            aux.setReturnValue(self.valor, Type.NULL)        
+            aux.__init__(self.valor, Type.NULL)        
         return aux

@@ -7,9 +7,14 @@ from .expresiones.arithmetic import *
 from .expresiones.literal import *
 from .expresiones.logic import *
 from .expresiones.relational import *
+from .expresiones.access import *
 from .symbol.environment import *
+from .instrucciones.statement import *
+from .instrucciones.assigment import *
+from .instrucciones.declaration import *
+from .instrucciones.funcion import *
 
-cont = 0
+
 reservadas = {
     'String' : 'STRING',
     'i64' : 'I64',
@@ -194,8 +199,6 @@ def t_error(t):
 
 def t_newline(t):
     r'\n+'
-   
-    cont = t.lexer.lexpos
     t.lexer.lineno += t.value.count("\n")
     
 
@@ -241,8 +244,53 @@ def p_global_listado(p):
 def p_global(p):
     '''
     global  : expresiones
+            | declaracion_variable
+            | asignacion
     '''
     p[0] = p[1]
+
+def p_declaracion_variable(p):
+    '''
+    declaracion_variable    : LET asignacion
+		                    		     
+    '''
+    p[0] = Declaration(p.lineno(1), p.lexpos(1), p[2], Type.NULL, False)
+
+def p_declaracion_variable_2(p):
+    '''
+    declaracion_variable    : LET MUT asignacion
+    '''
+    p[0] = Declaration(p.lineno(1), p.lexpos(1), p[3], Type.NULL, True)
+
+def p_asignacion_1(p):
+    '''
+    asignacion  : IDENTIFICADOR DOSPUNTOS tipo_dato IGUAL expresiones PCOMA
+    '''
+    if p[3] == "i64":
+        p[0] = Assigment(p.lineno(1), p.lexpos(1), p[1], p[5], Type.I64)
+    elif p[3] == "f64":
+        p[0] = Assigment(p.lineno(1), p.lexpos(1), p[1], p[5], Type.F64)
+    elif p[3] == "char":
+        p[0] = Assigment(p.lineno(1), p.lexpos(1), p[1], p[5], Type.CHAR)
+    elif p[3] == "bool":
+        p[0] = Assigment(p.lineno(1), p.lexpos(1), p[1], p[5], Type.BOOL)
+    elif p[3] == "string":
+        p[0] = Assigment(p.lineno(1), p.lexpos(1), p[1], p[5], Type.STRING)
+    elif p[3] == "str":
+        p[0] = Assigment(p.lineno(1), p.lexpos(1), p[1], p[5], Type.STR)
+    elif p[3] == "struct":
+        p[0] = Assigment(p.lineno(1), p.lexpos(1), p[1], p[5], Type.STRUCT)
+    elif p[3] == "usize":
+        p[0] = Assigment(p.lineno(1), p.lexpos(1), p[1], p[5], Type.USIZE)
+    else:
+        p[0] = Assigment(p.lineno(1), p.lexpos(1), p[1], p[5], Type.NULL)
+
+def p_asignacion_2(p):
+    '''
+    asignacion  : IDENTIFICADOR IGUAL expresiones PCOMA
+    '''
+    p[0] = Assigment(p.lineno(1), p.lexpos(1), p[1], p[3])
+
 
 
 def p_expresiones(p):
@@ -255,11 +303,18 @@ def p_expresiones(p):
     '''
     p[0] = p[1]
 
+
 def p_expresiones_2(p):
     '''
     expresiones : PARAP expresiones PARCL
     '''
     p[0] = p[2]
+
+def p_expresiones_3(p):
+    '''
+    expresiones : IDENTIFICADOR
+    '''
+    p[0] = Access(p.lineno(1), p.lexpos(1), p[1])
 
 def p_expresiones_aritmeticas_1(p):
     '''
@@ -388,35 +443,9 @@ def p_tipo_dato(p):
     '''
     p[0] = p[1]
 
-def p_tipo_dato_2(p):
-    '''
-    tipo_dato   : CONCAT MUT I64
-                | CONCAT MUT F64
-                | CONCAT MUT STR
-                | CONCAT MUT CHAR
-                | CONCAT MUT BOOL
-    '''
-    p[0] = p[1] + p[2] + p[3]
 
-def p_tipo_dato_3(p):
-    '''
-    tipo_dato   : CONCAT I64
-                | MUT I64
-                | CONCAT F64
-                | MUT F64
-                | CONCAT STR
-                | MUT STR
-                | MUT STRING
-                | CONCAT CHAR
-                | MUT CHAR
-                | CONCAT BOOL
-                | MUT BOOL
-    '''
-    p[0] = p[1] + p[2] 
 
 def p_error(p):
-    linea_actual = p.lexer.lexpos - cont
-    print(cont)
-    print("ERROR SINTACTICO EN EL TOKEN: ", p.type, "EN LA LINEA: ", p.lexer.lineno, "EN LA COLUMNA: ", linea_actual)
+    print("ERROR SINTACTICO EN EL TOKEN: ", p.type, "EN LA LINEA: ", p.lexer.lineno, "EN LA COLUMNA: ", p.lexpos)
           
 parser = yacc.yacc()

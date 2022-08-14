@@ -16,7 +16,7 @@ class Logic(Expresion):
         self.tipoOp = tipoOp
 
     def Ejecutar(self, environment):
-        print("EJECUTANDO UNA EXPRESION LOGICA")
+        print("EJECUTANDO LOGIC")
         resultado = Retorno()
         if self.tipoOp == LogicOption.AND:
             leftvalue = self.valor1.Ejecutar(environment)

@@ -20,7 +20,7 @@ class Arithmetic(Expresion):
         self.tipoOp = tipoOp
 
     def Ejecutar(self, environment):
-        print("EJECUTANDO UNA EXPRESION ARITMETICA")
+        print("EJECUTANDO ARITHMETIC")
         resultado = Retorno()
         try:
             if self.tipoOp == ArithmeticOption.SUMA:

@@ -1,5 +1,5 @@
-from abstract.instrucciones import *
-from symbol.environment import ClaseSym
+from ..abstract.instrucciones import *
+from ..symbol.environment import ClaseSym
 
 class Funcion(Instruccion):
     def __init__(self, linea, columna, id, tipado, statement, parametros):
@@ -10,4 +10,5 @@ class Funcion(Instruccion):
         self.parametros = parametros
 
     def Ejecutar(self, environment):
-        pass
+        print("EJECUTANDO FUNCION")
+        environment.guardarFunciones(self.id, self)

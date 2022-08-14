@@ -14,7 +14,7 @@ class Type(Enum):
     
 
 class Retorno:
-    def setReturnValue(self, value, tipado):
+    def __init__(self, value = None, tipado = Type.NULL):
         self.value = value
         self.tipado = tipado
 

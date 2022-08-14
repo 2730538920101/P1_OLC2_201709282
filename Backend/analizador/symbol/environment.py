@@ -15,11 +15,11 @@ class Entorno():
         self.funciones = {}
         self.entorno_anterior = entorno_anterior
 
-    def guardarVariables(self, id, valor, tipado, tipotoken = ClaseSym.VARIABLE):
+    def guardarVariables(self, id, valor, tipado, mutabilidad = False, tipotoken = ClaseSym.VARIABLE):
         env = self
         while(env != None):
             if id in env.variables:
-                sim = Symbol(id, valor, tipado, tipotoken)
+                sim = Symbol(id, valor, tipado, tipotoken, mutabilidad)
                 TablaSimbolos.append(sim)
                 env.variables.setdefault(id, sim)
                 return

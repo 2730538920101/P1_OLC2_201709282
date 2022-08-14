@@ -21,7 +21,8 @@ def Analizar():
     env = Entorno()
     for elemento in resp:
         ejec = elemento.Ejecutar(env)
-        print(ejec.value)
+        print(ejec)
+            
     #while True:
     #    tok = analizador.gramatica.lexer.token()
     #    if not tok: 
