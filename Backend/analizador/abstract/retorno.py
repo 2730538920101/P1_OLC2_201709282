@@ -1,4 +1,5 @@
 from enum import Enum, unique
+from http.client import CONTINUE
 
 @unique
 class Type(Enum):
@@ -11,6 +12,9 @@ class Type(Enum):
     BOOL = 6,
     USIZE = 7,
     STRUCT = 8,
+    BREAK = 9,
+    CONTINUE = 10,
+    RETURN = 11
     
 
 class Retorno:

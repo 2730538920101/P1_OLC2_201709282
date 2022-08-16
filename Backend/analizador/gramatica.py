@@ -13,6 +13,11 @@ from .instrucciones.statement import *
 from .instrucciones.assigment import *
 from .instrucciones.declaration import *
 from .instrucciones.funcion import *
+from .instrucciones.if_inst import *
+from .instrucciones.while_inst import *
+from .instrucciones.break_inst import *
+from .instrucciones.continue_inst import *
+from .instrucciones.return_inst import *
 
 
 reservadas = {
@@ -243,11 +248,117 @@ def p_global_listado(p):
 
 def p_global(p):
     '''
-    global  : expresiones
-            | declaracion_variable
-            | asignacion
+    global  : instruccion
     '''
     p[0] = p[1]
+
+def p_instruccion(p):
+    '''
+    instruccion : declaracion_variable
+		        | asignacion
+		        | expresiones PCOMA
+	            | expresiones
+                | expresiones COMA
+                | transferencia PCOMA
+                | transferencia
+    '''
+    p[0] = p[1]
+
+def p_transferecia_1(p):
+    '''
+    transferencia   : BREAK
+                    | RETURN 
+                    | CONTINUE 
+    '''
+    if p[1] == "break":
+        p[0] = Break(p.lineno(1), p.lexpos(1), Type.NULL, Type.BREAK)
+    elif p[1] == "return":
+        p[0] = Return(p.lineno(1), p.lexpos(1), Type.NULL, Type.RETURN)
+    elif [1] == "continue":
+        p[0] = Continue(p.lineno(1), p.lexpos(1), Type.NULL, Type.CONTINUE)
+    else:
+        print("ERROR EN LA INSTRUCCION DE TRANSFERENCIA")
+
+def p_transferecia_2(p):
+    '''
+    transferencia   : BREAK expresiones
+                    | RETURN expresiones 
+    '''
+    if p[1] == "break":
+        p[0] = Break(p.lineno(1), p.lexpos(1), p[2], Type.BREAK)
+    elif p[1] == "return":
+        p[0] = Return(p.lineno(1), p.lexpos(1), p[2], Type.RETURN)
+
+def p_sentencias(p):
+    '''
+    sentencias  : generar_if
+                | generar_while
+                | generar_for
+    '''
+    p[0] = p[1]
+
+
+def p_generar_if(p):   
+    '''
+    generar_if  : IF expresiones entorno generar_else
+
+    '''
+    p[0] = If(p.lineno(1), p.lexpos(1), p[2], p[3], p[4])
+
+def p_generar_else_1(p):
+    '''
+    generar_else    : ELSE entorno  
+    generar_else    : ELSE generar_if
+    ''' 
+    p[0] = p[2]
+
+def p_generar_else_2(p):
+    '''
+    generar_else    : empty
+    ''' 
+    p[0] = p[1]
+
+def p_empty(p):
+    'empty :'
+    p[0] = Type.NULL
+
+
+def p_generar_while(p):
+    '''
+    generar_while : WHILE expresiones entorno
+    '''
+    p[0] = While(p.lineno(1), p.lexpos(1), p[2], p[3])
+
+def p_generar_for(p):
+    '''
+    generar_for : FOR IDENTIFICADOR IN expresiones entorno 
+    '''
+
+
+def p_entorno_1(p):
+    '''
+    entorno : LLAVEAP lista_instrucciones LLAVECL
+    '''
+    p[0] = Statement(p.lineno(1), p.lexpos(1), p[2])
+
+def p_entorno_2(p):
+    '''
+    entorno : LLAVEAP LLAVECL
+    '''
+    pass
+
+def p_lista_instrucciones_lista(p):
+    '''
+    lista_instrucciones : lista_instrucciones instruccion
+    ''' 
+    p[0] = p[1].append(p[2])
+    p[0] = p[1]
+
+def p_lista_instrucciones(p):
+    '''
+    lista_instrucciones : instruccion
+    '''
+    p[0] = [p[1]]
 
 def p_declaracion_variable(p):
     '''
@@ -299,6 +410,7 @@ def p_expresiones(p):
                 | expresiones_logicas
                 | expresiones_relacionales
                 | valores
+                | sentencias
                
     '''
     p[0] = p[1]
@@ -383,7 +495,6 @@ def p_expresiones_relacionales(p):
 def p_especiales_1(p):
     '''
     especiales  : expresiones AS tipo_dato
-                | expresiones IN expresiones
     '''
 
 def p_especiales_2(p):
