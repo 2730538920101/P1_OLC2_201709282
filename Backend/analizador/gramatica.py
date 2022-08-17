@@ -1,5 +1,6 @@
 import ply.lex as lex
 import ply.yacc as yacc
+
 from .abstract.expresiones import *
 from .abstract.instrucciones import *
 from .abstract.retorno import *
@@ -18,7 +19,9 @@ from .instrucciones.while_inst import *
 from .instrucciones.break_inst import *
 from .instrucciones.continue_inst import *
 from .instrucciones.return_inst import *
-
+from .instrucciones.loop import *
+from .instrucciones.match import *
+from .instrucciones.case import *
 
 reservadas = {
     'String' : 'STRING',
@@ -100,7 +103,6 @@ tokens = [
     'DOBFLECHA',
     'DOBIGUAL',
     'COMENTARIO',
-    'GBAJO',
     'IDENTIFICADOR',
     'CADENA',
     'NUMERO',
@@ -131,7 +133,6 @@ t_BARRA = r'\|'
 t_MENORIG = r'[\<][\=]'
 t_MAYORIG = r'[\>][\=]'
 t_OR = r'[\|][\|]'
-t_GBAJO = r'[\_]'
 t_CONCAT = r'[\&]'
 t_AND =	r'[\&][\&]'
 t_DIF =	r'[\!][\=]'
@@ -256,11 +257,7 @@ def p_instruccion(p):
     '''
     instruccion : declaracion_variable
 		        | asignacion
-		        | expresiones PCOMA
 	            | expresiones
-                | expresiones COMA
-                | transferencia PCOMA
-                | transferencia
     '''
     p[0] = p[1]
 
@@ -294,6 +291,8 @@ def p_sentencias(p):
     sentencias  : generar_if
                 | generar_while
                 | generar_for
+                | generar_loop
+                | generar_match
     '''
     p[0] = p[1]
 
@@ -334,6 +333,84 @@ def p_generar_for(p):
     generar_for : FOR IDENTIFICADOR IN expresiones entorno 
     '''
 
+def p_generar_loop(p):
+    '''
+    generar_loop    : LOOP entorno
+    '''
+    p[0] = Loop(p.lineno(1), p.lexpos(1), p[2])
+
+def p_entorno_match_1(p):
+    '''
+    entorno_match   : LLAVEAP cases_list default_exp LLAVECL
+    '''
+    p[2].extend(p[3])
+    p[0] = p[2]
+ 
+def p_entorno_match_2(p):
+    '''
+    entorno_match   : LLAVEAP cases_list LLAVECL
+    '''
+    p[0] = p[2]
+
+def p_entorno_match_3(p):
+    '''
+    entorno_match   : LLAVEAP default_exp LLAVECL
+    '''
+    p[0] = p[2]
+
+def p_generar_match(p):
+    '''
+    generar_match   : MATCH expresiones entorno_match
+    ''' 
+    p[0] = Match(p.lineno(1), p.lexpos(1), p[2], p[3])
+
+def p_cases_list_list_1(p):
+    '''
+    cases_list  : cases_list expresiones DOBFLECHA instruccion 
+    '''
+    code = Statement(p.lineno(2), p.lexpos(2), [p[4]])
+    case1 = Case(p.lineno(2), p.lexpos(2), p[2], code)
+    p[1].append(case1)
+    p[0] = p[1]
+
+def p_cases_list_list_2(p):
+    '''
+    cases_list  : cases_list expresiones DOBFLECHA entorno
+    '''
+    case2 = Case(p.lineno(2), p.lexpos(2), p[2], p[4])
+    p[1].append(case2)
+    p[0] = p[1]
+
+def p_cases_list_1(p):
+    '''
+    cases_list  : expresiones DOBFLECHA entorno
+    '''
+    case3 = Case(p.lineno(1), p.lexpos(1), p[1], p[3])
+    p[0] = [case3]
+
+def p_cases_list_2(p):
+    '''
+    cases_list  : expresiones DOBFLECHA instruccion
+    '''
+    code2 = Statement(p.lineno(1), p.lexpos(1), [p[3]])
+    case4 = Case(p.lineno(1), p.lexpos(1), p[1], code2)
+    p[0] = [case4]
+    
+
+def p_default_exp_1(p):
+    '''
+    default_exp : IDENTIFICADOR DOBFLECHA instruccion 
+    '''
+    code3 = Statement(p.lineno(1), p.lexpos(1), [p[3]])
+    case5 = Case(p.lineno(1), p.lexpos(1), None, code3)
+    p[0] = [case5]
+
+def p_default_exp_2(p):
+    '''
+    default_exp : IDENTIFICADOR DOBFLECHA entorno
+    '''
+    case6 = Case(p.lineno(1), p.lexpos(1), None, p[3])
+    p[0] = [case6]
 
 def p_entorno_1(p):
     '''
@@ -375,7 +452,7 @@ def p_declaracion_variable_2(p):
 
 def p_asignacion_1(p):
     '''
-    asignacion  : IDENTIFICADOR DOSPUNTOS tipo_dato IGUAL expresiones PCOMA
+    asignacion  : IDENTIFICADOR DOSPUNTOS tipo_dato IGUAL expresiones
     '''
     if p[3] == "i64":
         p[0] = Assigment(p.lineno(1), p.lexpos(1), p[1], p[5], Type.I64)
@@ -393,14 +470,13 @@ def p_asignacion_1(p):
         p[0] = Assigment(p.lineno(1), p.lexpos(1), p[1], p[5], Type.STRUCT)
     elif p[3] == "usize":
         p[0] = Assigment(p.lineno(1), p.lexpos(1), p[1], p[5], Type.USIZE)
-    else:
-        p[0] = Assigment(p.lineno(1), p.lexpos(1), p[1], p[5], Type.NULL)
+
 
 def p_asignacion_2(p):
     '''
-    asignacion  : IDENTIFICADOR IGUAL expresiones PCOMA
+    asignacion  : IDENTIFICADOR IGUAL expresiones
     '''
-    p[0] = Assigment(p.lineno(1), p.lexpos(1), p[1], p[3])
+    p[0] = Assigment(p.lineno(1), p.lexpos(1), p[1], p[3], Type.NULL)
 
 
 
@@ -411,6 +487,9 @@ def p_expresiones(p):
                 | expresiones_relacionales
                 | valores
                 | sentencias
+                | transferencia
+                | expresiones COMA
+                | expresiones PCOMA
                
     '''
     p[0] = p[1]

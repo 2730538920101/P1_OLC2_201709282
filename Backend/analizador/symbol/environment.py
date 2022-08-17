@@ -19,12 +19,12 @@ class Entorno():
         env = self
         while(env != None):
             if id in env.variables:
-                sim = Symbol(id, valor, tipado, tipotoken, mutabilidad)
+                sim = Symbol(id, valor, tipado, mutabilidad, tipotoken)
                 TablaSimbolos.append(sim)
                 env.variables.setdefault(id, sim)
                 return
             env = env.entorno_anterior
-        sim2 = Symbol(id, valor, tipado, tipotoken)
+        sim2 = Symbol(id, valor, tipado, mutabilidad, tipotoken)
         self.variables.setdefault(id, sim2)
         TablaSimbolos.append(sim2)
 
@@ -32,12 +32,12 @@ class Entorno():
         env = self
         while(env != None):
             if id in env.funciones:
-                sim = Symbol(id, "FUNCION", funcion.tipado, tipotoken = ClaseSym.FUNCION)
+                sim = Symbol(id, "FUNCION", funcion.tipado, mutabilidad = False, tipotoken = ClaseSym.FUNCION)
                 TablaSimbolos.append(sim)
                 env.funciones.setdefault(id, funcion)
                 return
             env = env.entorno_anterior
-        sim2 = Symbol(id, "FUNCION", funcion.tipado, tipotoken = ClaseSym.FUNCION)
+        sim2 = Symbol(id, "FUNCION", funcion.tipado, mutabilidad=False, tipotoken = ClaseSym.FUNCION)
         TablaSimbolos.append(sim2)
         self.funciones.setdefault(id, funcion)
 
