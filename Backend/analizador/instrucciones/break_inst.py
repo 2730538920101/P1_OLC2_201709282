@@ -10,13 +10,10 @@ class Break(Instruccion):
     
     def Ejecutar(self, environment):
         aux = Retorno()
-        if self.exp != Type.NULL:
+        if self.exp != None:
             val = self.exp.Ejecutar(environment)
             aux.tipado = self.tipado
             aux.value = val
             return aux
-        else:
-            aux.tipado = self.tipado
-            aux.value = Type.NULL
-            return aux
+        
         

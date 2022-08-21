@@ -11,13 +11,10 @@ class Access(Expresion):
     def Ejecutar(self, environment):
         print("EJECUTANDO ACCESS")
         aux = Retorno()
-        if self.id == "_":
-            return None
+        valor = environment.getVariable(self.id)
+        if valor == None:
+            print("ERROR SEMANTICO, VARIABLE NO HA SIDO DECLARADA")
         else:
-            valor = environment.getVariable(self.id)
-            if valor == None:
-                print("ERROR SEMANTICO, VARIABLE NO HA SIDO DECLARADA")
-            else:
-                aux.__init__(valor.valor, valor.tipado)
-            return aux
+            aux.__init__(valor.valor, valor.tipado)
+        return aux
         

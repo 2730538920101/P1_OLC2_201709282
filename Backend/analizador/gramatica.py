@@ -103,6 +103,7 @@ tokens = [
     'DOBFLECHA',
     'DOBIGUAL',
     'COMENTARIO',
+    'GBAJO',
     'IDENTIFICADOR',
     'CADENA',
     'NUMERO',
@@ -139,6 +140,7 @@ t_DIF =	r'[\!][\=]'
 t_DOBFLECHA = r'[\=][\>]'
 t_FLECHA =	r'[\-][\>]'
 t_DOBIGUAL = r'[\=][\=]'
+t_GBAJO = r'[_]'
 
 
 t_ignore = ' \n\r\t'
@@ -151,7 +153,7 @@ def t_COMENTARIO(t):
 
 
 def t_IDENTIFICADOR(t):
-    r'[a-zA-Z_][a-zA-Z_0-9]*'
+    r'[a-zA-Z][a-zA-Z_0-9]*'
     try:
         t.type = reservadas.get(t.value, 'IDENTIFICADOR')
     except ValueError:
@@ -268,11 +270,11 @@ def p_transferecia_1(p):
                     | CONTINUE 
     '''
     if p[1] == "break":
-        p[0] = Break(p.lineno(1), p.lexpos(1), Type.NULL, Type.BREAK)
+        p[0] = Break(p.lineno(1), p.lexpos(1), None, Type.BREAK)
     elif p[1] == "return":
-        p[0] = Return(p.lineno(1), p.lexpos(1), Type.NULL, Type.RETURN)
+        p[0] = Return(p.lineno(1), p.lexpos(1), None, Type.RETURN)
     elif [1] == "continue":
-        p[0] = Continue(p.lineno(1), p.lexpos(1), Type.NULL, Type.CONTINUE)
+        p[0] = Continue(p.lineno(1), p.lexpos(1), None, Type.CONTINUE)
     else:
         print("ERROR EN LA INSTRUCCION DE TRANSFERENCIA")
 
@@ -399,7 +401,7 @@ def p_cases_list_2(p):
 
 def p_default_exp_1(p):
     '''
-    default_exp : IDENTIFICADOR DOBFLECHA instruccion 
+    default_exp : GBAJO DOBFLECHA instruccion 
     '''
     code3 = Statement(p.lineno(1), p.lexpos(1), [p[3]])
     case5 = Case(p.lineno(1), p.lexpos(1), None, code3)
@@ -407,7 +409,7 @@ def p_default_exp_1(p):
 
 def p_default_exp_2(p):
     '''
-    default_exp : IDENTIFICADOR DOBFLECHA entorno
+    default_exp : GBAJO DOBFLECHA entorno
     '''
     case6 = Case(p.lineno(1), p.lexpos(1), None, p[3])
     p[0] = [case6]
@@ -530,7 +532,7 @@ def p_expresiones_aritmeticas_2(p):
     '''
     expresiones_aritmeticas : MENOS expresiones %prec UMENOS
     '''
-    p[0] = Arithmetic(p.lineno(1), p.lexpos(1), 0, p[2], ArithmeticOption.UNARIO)
+    p[0] = Arithmetic(p.lineno(1), p.lexpos(1), None, p[2], ArithmeticOption.UNARIO)
 
 def p_expresiones_logicas_1(p):
     '''

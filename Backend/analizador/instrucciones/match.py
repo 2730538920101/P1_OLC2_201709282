@@ -30,12 +30,11 @@ class Match(Instruccion):
             else:
                 elemento = caso.Ejecutar(environment)
                 if elemento != None:
-                    if elemento != None:
-                            if elemento.tipado == Type.BREAK:
-                                break
-                            elif elemento.tipado == Type.CONTINUE:
-                                continue
-                            else:
-                                return elemento       
+                        if elemento.tipado == Type.BREAK:
+                            break
+                        elif elemento.tipado == Type.CONTINUE:
+                            continue
+                        else:
+                            return elemento   
 
             

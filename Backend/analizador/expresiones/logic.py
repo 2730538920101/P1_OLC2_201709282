@@ -1,3 +1,4 @@
+from .access import Access
 from ..abstract.expresiones import *
 from ..abstract.retorno import *
 from enum import Enum, unique
@@ -18,18 +19,24 @@ class Logic(Expresion):
     def Ejecutar(self, environment):
         print("EJECUTANDO LOGIC")
         resultado = Retorno()
+        if self.valor1 != None:
+            if isinstance(self.valor1, Access):    
+                leftvalue = self.valor1.Ejecutar(environment).value
+            else:
+                leftvalue = self.valor1.Ejecutar(environment)
+        if self.valor2 != None:
+            if isinstance(self.valor2, Access):
+                rightvalue = self.valor2.Ejecutar(environment).value
+            else:
+                rightvalue = self.valor2.Ejecutar(environment)
         if self.tipoOp == LogicOption.AND:
-            leftvalue = self.valor1.Ejecutar(environment)
-            rightvalue = self.valor2.Ejecutar(environment)
             resultado.value = leftvalue.value and rightvalue.value
             resultado.tipado = Type.BOOL
         elif self.tipoOp == LogicOption.OR:
-            leftvalue = self.valor1.Ejecutar(environment)
-            rightvalue = self.valor2.Ejecutar(environment)
             resultado.value = leftvalue.value or rightvalue.value
             resultado.tipado = Type.BOOL
         elif self.tipoOp == LogicOption.NOT:
-            leftvalue = self.valor1.Ejecutar(environment)
+           
             resultado.value = not(leftvalue.value)
             resultado.tipado = Type.BOOL
         else:

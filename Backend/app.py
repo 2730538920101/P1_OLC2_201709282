@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from analizador.abstract.retorno import *
 import analizador.gramatica
 from  analizador.symbol.environment import Entorno 
 
@@ -22,7 +23,10 @@ def Analizar():
     for elemento in resp:
         ejec = elemento.Ejecutar(env)
         if ejec != None:
-            print(ejec.value)
+            if isinstance(ejec.value, Retorno):
+                print("EJECUCION ACTUAL: ", ejec.value.value)    
+            else:
+                print("EJECUCION ACTUAL: ", ejec.value)
             
     #while True:
     #    tok = analizador.gramatica.lexer.token()

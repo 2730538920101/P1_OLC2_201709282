@@ -19,7 +19,7 @@ class Assigment(Instruccion):
                 if iden.mutabilidad == True:
                     environment.guardarVariables(self.id, val.value, self.tipado, True)
                 else:
-                    print("ERROR SEMANTICO, LA VARIABLE NO ES MUTABLE")
+                    environment.guardarVariables(self.id, val.value, self.tipado, False)
             else:
                 if iden.tipado ==  self.tipado:
                     if iden.mutabilidad == True:
