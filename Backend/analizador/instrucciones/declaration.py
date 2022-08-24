@@ -15,6 +15,6 @@ class Declaration(Instruccion):
         tipo = self.asignacion.getTipado(environment)
         val = self.asignacion.getValue().Ejecutar(environment)
         environment.guardarVariables(iden, val, tipo, self.mutabilidad)
-        self.asignacion.Ejecutar(environment)
+        
         
         

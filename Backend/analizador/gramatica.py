@@ -9,6 +9,10 @@ from .expresiones.literal import *
 from .expresiones.logic import *
 from .expresiones.relational import *
 from .expresiones.access import *
+from .expresiones.casting import *
+from .expresiones.array_index import *
+from .expresiones.array_complete import *
+from .expresiones.array_type import *
 from .symbol.environment import *
 from .instrucciones.statement import *
 from .instrucciones.assigment import *
@@ -22,6 +26,7 @@ from .instrucciones.return_inst import *
 from .instrucciones.loop import *
 from .instrucciones.match import *
 from .instrucciones.case import *
+from .instrucciones.array_assigment import *
 
 reservadas = {
     'String' : 'STRING',
@@ -383,6 +388,15 @@ def p_cases_list_list_2(p):
     p[1].append(case2)
     p[0] = p[1]
 
+def p_cases_list_list_3(p):
+    '''
+    cases_list  : cases_list expresiones DOBFLECHA instruccion COMA
+    '''
+    code = Statement(p.lineno(2), p.lexpos(2), [p[4]])
+    case1 = Case(p.lineno(2), p.lexpos(2), p[2], code)
+    p[1].append(case1)
+    p[0] = p[1]
+
 def p_cases_list_1(p):
     '''
     cases_list  : expresiones DOBFLECHA entorno
@@ -397,11 +411,27 @@ def p_cases_list_2(p):
     code2 = Statement(p.lineno(1), p.lexpos(1), [p[3]])
     case4 = Case(p.lineno(1), p.lexpos(1), p[1], code2)
     p[0] = [case4]
+
+def p_cases_list_3(p):
+    '''
+    cases_list  : expresiones DOBFLECHA instruccion COMA
+    '''
+    code2 = Statement(p.lineno(1), p.lexpos(1), [p[3]])
+    case4 = Case(p.lineno(1), p.lexpos(1), p[1], code2)
+    p[0] = [case4]
     
 
 def p_default_exp_1(p):
     '''
     default_exp : GBAJO DOBFLECHA instruccion 
+    '''
+    code3 = Statement(p.lineno(1), p.lexpos(1), [p[3]])
+    case5 = Case(p.lineno(1), p.lexpos(1), None, code3)
+    p[0] = [case5]
+
+def p_default_exp_2(p):
+    '''
+    default_exp : GBAJO DOBFLECHA instruccion COMA 
     '''
     code3 = Statement(p.lineno(1), p.lexpos(1), [p[3]])
     case5 = Case(p.lineno(1), p.lexpos(1), None, code3)
@@ -456,21 +486,21 @@ def p_asignacion_1(p):
     '''
     asignacion  : IDENTIFICADOR DOSPUNTOS tipo_dato IGUAL expresiones
     '''
-    if p[3] == "i64":
+    if p[3] == Type.I64:
         p[0] = Assigment(p.lineno(1), p.lexpos(1), p[1], p[5], Type.I64)
-    elif p[3] == "f64":
+    elif p[3] == Type.F64:
         p[0] = Assigment(p.lineno(1), p.lexpos(1), p[1], p[5], Type.F64)
-    elif p[3] == "char":
+    elif p[3] == Type.CHAR:
         p[0] = Assigment(p.lineno(1), p.lexpos(1), p[1], p[5], Type.CHAR)
-    elif p[3] == "bool":
+    elif p[3] == Type.BOOL:
         p[0] = Assigment(p.lineno(1), p.lexpos(1), p[1], p[5], Type.BOOL)
-    elif p[3] == "string":
+    elif p[3] == Type.STRING:
         p[0] = Assigment(p.lineno(1), p.lexpos(1), p[1], p[5], Type.STRING)
-    elif p[3] == "str":
+    elif p[3] == Type.STR:
         p[0] = Assigment(p.lineno(1), p.lexpos(1), p[1], p[5], Type.STR)
-    elif p[3] == "struct":
+    elif p[3] == Type.STRUCT:
         p[0] = Assigment(p.lineno(1), p.lexpos(1), p[1], p[5], Type.STRUCT)
-    elif p[3] == "usize":
+    elif p[3] == Type.USIZE:
         p[0] = Assigment(p.lineno(1), p.lexpos(1), p[1], p[5], Type.USIZE)
 
 
@@ -480,7 +510,24 @@ def p_asignacion_2(p):
     '''
     p[0] = Assigment(p.lineno(1), p.lexpos(1), p[1], p[3], Type.NULL)
 
+def p_asignacion_3(p):
+    '''
+    asignacion  : IDENTIFICADOR DOSPUNTOS tipo_array IGUAL expresiones
+    '''
+    p[0] = Array_assigment(p.lineno(1), p.lexpos(1),p[1], p[5], p[3])
 
+def p_tipo_array(p):
+    '''
+    tipo_array  : CORCHETEAP tipo_dato PCOMA NUMERO CORCHETECL
+    '''
+    p[0] = Array_type(p[2], [p[4]])
+
+def p_tipo_array_2(p):
+    '''
+    tipo_array  : CORCHETEAP tipo_array PCOMA NUMERO CORCHETECL
+    '''
+    p[2].index.append(p[4])
+    p[0] = p[2]
 
 def p_expresiones(p):
     '''
@@ -490,7 +537,7 @@ def p_expresiones(p):
                 | valores
                 | sentencias
                 | transferencia
-                | expresiones COMA
+                | casting
                 | expresiones PCOMA
                
     '''
@@ -508,6 +555,32 @@ def p_expresiones_3(p):
     expresiones : IDENTIFICADOR
     '''
     p[0] = Access(p.lineno(1), p.lexpos(1), p[1])
+
+def p_expresiones_4(p):
+    '''
+    expresiones : CORCHETEAP expresiones PCOMA expresiones CORCHETECL
+    '''
+    p[0] = Array_index(p.lineno(1), p.lexpos(1), p[2], p[4])
+
+def p_expresiones_5(p):
+    '''
+    expresiones : CORCHETEAP lista_expresiones CORCHETECL
+    '''
+    p[0] = Array_complete(p.lineno(1), p.lexpos(1), p[2], Type.ARRAY)
+
+def p_lista_exp_1(p):
+    '''
+    lista_expresiones   : lista_expresiones COMA expresiones
+    '''
+    p[1].append(p[3])
+    p[0] = p[1]
+
+def p_lista_exp_2(p):
+    '''
+    lista_expresiones   : expresiones
+    '''
+    p[0] = [p[1]]
+
 
 def p_expresiones_aritmeticas_1(p):
     '''
@@ -575,14 +648,9 @@ def p_expresiones_relacionales(p):
 
 def p_especiales_1(p):
     '''
-    especiales  : expresiones AS tipo_dato
+    casting  : expresiones AS tipo_dato
     '''
-
-def p_especiales_2(p):
-    '''
-    especiales  :   expresiones PUNTO PUNTO expresiones
-                
-    '''
+    p[0] = Casting(p.lineno(1), p.lexpos(1), p[1], p[3])
 
 def p_valores_1(p):
     '''
@@ -629,11 +697,26 @@ def p_tipo_dato(p):
                 | STRING
                 | CHAR
                 | BOOL
-                | STR
+                | CONCAT STR
                 | USIZE
                 | STRUCT
     '''
-    p[0] = p[1]
+    if p[1] == "i64":
+        p[0] = Type.I64
+    elif p[1] == "f64":
+        p[0] = Type.F64
+    elif p[1] == "string":
+        p[0] = Type.STRING
+    elif p[1] == "char":
+        p[0] = Type.CHAR
+    elif p[1] == "bool":
+        p[0] = Type.BOOL
+    elif p[1] == "&":
+        p[0] = Type.STR
+    elif p[1] == "usize":
+        p[0] = Type.USIZE
+    elif p[1] == "struct":
+        p[0] = Type.STRUCT
 
 
 

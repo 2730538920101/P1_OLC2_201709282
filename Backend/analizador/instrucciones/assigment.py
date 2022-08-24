@@ -13,23 +13,26 @@ class Assigment(Instruccion):
         print("EJECUTANDO ASSIGMENT")
         val = self.value.Ejecutar(environment)
         iden = environment.getVariable(self.id)
-        if iden != None:
-            if self.tipado == Type.NULL:
-                self.tipado = val.tipado        
-                if iden.mutabilidad == True:
-                    environment.guardarVariables(self.id, val.value, self.tipado, True)
-                else:
-                    environment.guardarVariables(self.id, val.value, self.tipado, False)
-            else:
-                if iden.tipado ==  self.tipado:
+        try:
+            if iden != None:
+                if self.tipado == Type.NULL:
+                    self.tipado = val.tipado       
                     if iden.mutabilidad == True:
-                        environment.guardarVariables(self.id, val.value, val.tipado, True)
-                    else:
+                        environment.guardarVariables(self.id, val.value, self.tipado, True)
+                    else:            
                         print("ERROR SEMANTICO, LA VARIABLE NO ES MUTABLE")
                 else:
-                    print("ERROR SEMANTICO, NO PUEDE ASIGNAR UNA EXPRESION DE DIFERENTE TIPO AL QUE LA VARIABLE FUE DECLARADA")
-        else:
-            print("ERROR SEMANTICO, LA VARIABLE NO HA SIDO DECLARADA")
+                    if iden.tipado ==  self.tipado:
+                        if iden.mutabilidad == True:
+                            environment.guardarVariables(self.id, val.value, val.tipado, True)
+                        else:
+                            print("ERROR SEMANTICO, LA VARIABLE NO ES MUTABLE")
+                    else:
+                        print("ERROR SEMANTICO, NO PUEDE ASIGNAR UNA EXPRESION DE DIFERENTE TIPO AL QUE LA VARIABLE FUE DECLARADA")
+            else:
+                print("ERROR SEMANTICO, LA VARIABLE NO HA SIDO DECLARADA")
+        except:
+            print("ERROR SEMANTICO EN LA ASIGNACION")
 
     def getTipado(self, environment):
         return self.value.Ejecutar(environment).tipado

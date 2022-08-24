@@ -14,7 +14,8 @@ class Type(Enum):
     STRUCT = 8,
     BREAK = 9,
     CONTINUE = 10,
-    RETURN = 11
+    RETURN = 11,
+    ARRAY = 12
     
 
 class Retorno:
