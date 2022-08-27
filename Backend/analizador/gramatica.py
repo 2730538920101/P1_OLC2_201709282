@@ -13,6 +13,10 @@ from .expresiones.casting import *
 from .expresiones.array_index import *
 from .expresiones.array_complete import *
 from .expresiones.array_type import *
+from .expresiones.vector_index import *
+from .expresiones.vector_complete import *
+from .expresiones.atributo_struct import *
+from .expresiones.generar_struct import *
 from .symbol.environment import *
 from .instrucciones.statement import *
 from .instrucciones.assigment import *
@@ -27,6 +31,11 @@ from .instrucciones.loop import *
 from .instrucciones.match import *
 from .instrucciones.case import *
 from .instrucciones.array_assigment import *
+from .instrucciones.vector_assigment_new import *
+from .instrucciones.declaracion_struct import *
+from .instrucciones.declaracion_atributo_struct import *
+
+
 
 reservadas = {
     'String' : 'STRING',
@@ -62,7 +71,7 @@ reservadas = {
     'while' : 'WHILE',
     'for' : 'FOR',
     'in' : 'IN',
-    'vec' : 'VECMIN',
+    'vec' : 'VECMIN', 
     'Vec' : 'VECMAY',
     'chars' : 'CHARS',
     'break' : 'BREAK',
@@ -120,8 +129,8 @@ t_MAS = r'\+'
 t_MENOS = r'[\-]'
 t_POR =	r'[\*]'
 t_DIV =	r'[\/]'
-t_MAYOR = r'[\<]'
-t_MENOR = r'[\>]'
+t_MAYOR = r'[\>]'
+t_MENOR = r'[\<]'
 t_IGUAL	= r'[\=]'
 t_CORCHETEAP =	r'\['
 t_CORCHETECL =	r'\]'
@@ -257,6 +266,7 @@ def p_global_listado(p):
 def p_global(p):
     '''
     global  : instruccion
+            | declaracion_struct
     '''
     p[0] = p[1]
 
@@ -469,6 +479,27 @@ def p_lista_instrucciones(p):
     '''
     p[0] = [p[1]]
 
+
+def p_declaracion_struct(p):
+    '''
+    declaracion_struct  : STRUCT IDENTIFICADOR LLAVEAP lista_atributos_struct LLAVECL
+    '''
+    p[0] = Declaracion_struct(p.lineno(1), p.lexpos(1), p[2], p[4], Type.STRUCT)
+
+def p_lista_atributos_struct_1(p):
+    '''
+    lista_atributos_struct :   lista_atributos_struct COMA IDENTIFICADOR DOSPUNTOS tipo_dato
+    '''
+    atr = Declaracion_atributo_struct(p.lineno(3), p.lexpos(3), p[3], p[5])
+    p[1].append(atr)
+    p[0] = p[1] 
+
+def p_lista_atributos_struct_2(p):
+    '''
+    lista_atributos_struct :   IDENTIFICADOR DOSPUNTOS tipo_dato
+    '''
+    p[0] = [Declaracion_atributo_struct(p.lineno(1), p.lexpos(1), p[1], p[3])]
+
 def p_declaracion_variable(p):
     '''
     declaracion_variable    : LET asignacion
@@ -515,6 +546,13 @@ def p_asignacion_3(p):
     asignacion  : IDENTIFICADOR DOSPUNTOS tipo_array IGUAL expresiones
     '''
     p[0] = Array_assigment(p.lineno(1), p.lexpos(1),p[1], p[5], p[3])
+
+def p_asignacion_4(p):
+    '''
+    asignacion  : IDENTIFICADOR DOSPUNTOS VECMAY MENOR tipo_dato MAYOR IGUAL expresiones 
+    '''
+    p[0] = Vector_assigment_new(p.lineno(1), p.lexpos(1), p[1], p[5], p[8])
+
 
 def p_tipo_array(p):
     '''
@@ -567,6 +605,50 @@ def p_expresiones_5(p):
     expresiones : CORCHETEAP lista_expresiones CORCHETECL
     '''
     p[0] = Array_complete(p.lineno(1), p.lexpos(1), p[2], Type.ARRAY)
+
+def p_expresiones_6(p):
+    '''
+    expresiones : VECMIN NOT CORCHETEAP expresiones PCOMA expresiones CORCHETECL
+    '''
+    p[0] = Vector_index(p.lineno(1), p.lexpos(1), p[4], p[6])
+
+def p_expresiones_7(p):
+    '''
+    expresiones : VECMIN NOT CORCHETEAP lista_expresiones CORCHETECL
+    '''
+    p[0] = Vector_complete(p.lineno(1), p.lexpos(1), p[4], Type.VECTOR)
+
+def p_expresiones_8(p):
+    '''
+    expresiones : VECMAY DOSPUNTOS DOSPUNTOS NEW PARAP PARCL
+    '''
+    p[0] = None
+
+def p_expresiones_9(p):
+    '''
+    expresiones : VECMAY DOSPUNTOS DOSPUNTOS WITH_CAPACITY PARAP expresiones PARCL
+    '''
+    p[0] = p[6]
+
+def p_expresiones_10(p):
+    '''
+    expresiones : IDENTIFICADOR LLAVEAP lista_atributos LLAVECL
+    '''
+    p[0] = Generar_struct(p.lineno(1), p.lexpos(1), p[1], p[3], Type.STRUCT)
+
+def p_lista_atributos_1(p):
+    '''
+    lista_atributos :   lista_atributos COMA IDENTIFICADOR DOSPUNTOS expresiones 
+    '''
+    atr1 = Atributo_struct(p.lineno(3), p.lexpos(3),p[3], p[5])
+    p[1].append(atr1)
+    p[0] = p[1]
+
+def p_lista_atributos_2(p):
+    '''
+    lista_atributos :   IDENTIFICADOR DOSPUNTOS expresiones
+    '''
+    p[0] = [Atributo_struct(p.lineno(1), p.lexpos(1), p[1], p[3])]
 
 def p_lista_exp_1(p):
     '''
@@ -705,7 +787,7 @@ def p_tipo_dato(p):
         p[0] = Type.I64
     elif p[1] == "f64":
         p[0] = Type.F64
-    elif p[1] == "string":
+    elif p[1] == "String":
         p[0] = Type.STRING
     elif p[1] == "char":
         p[0] = Type.CHAR

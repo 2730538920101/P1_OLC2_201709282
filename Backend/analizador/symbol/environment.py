@@ -5,7 +5,8 @@ from .symbol import Symbol
 @unique
 class ClaseSym(Enum):
     VARIABLE = 0,
-    FUNCION = 1
+    FUNCION = 1,
+    STRUCT = 2
 
 
 
@@ -13,6 +14,7 @@ class Entorno():
     def __init__(self,  entorno_anterior = None):
         self.variables = {}
         self.funciones = {}
+        self.structs = {}
         self.entorno_anterior = entorno_anterior
 
     def guardarVariables(self, id, valor, tipado, mutabilidad = False, tipotoken = ClaseSym.VARIABLE):
@@ -26,6 +28,19 @@ class Entorno():
             env = env.entorno_anterior
         sim2 = Symbol(id, valor, tipado, mutabilidad, tipotoken)
         self.variables.setdefault(id, sim2)
+        TablaSimbolos.append(sim2)
+
+    def guardarStructs(self, id, valor, tipado, mutabilidad = True, tipotoken = ClaseSym.STRUCT):
+        env = self
+        while(env != None):
+            if id in env.structs:
+                sim = Symbol(id, valor, tipado, mutabilidad, tipotoken)
+                TablaSimbolos.append(sim)
+                env.structs.setdefault(id, sim)
+                return
+            env = env.entorno_anterior
+        sim2 = Symbol(id, valor, tipado, mutabilidad, tipotoken = ClaseSym.STRUCT)
+        self.structs.setdefault(id, sim2)
         TablaSimbolos.append(sim2)
 
     def guardarFunciones(self, id, funcion):
@@ -47,6 +62,14 @@ class Entorno():
         while(env != None):
             if id in env.variables:
                 return env.variables.get(id)
+            env = env.entorno_anterior
+        return None        
+
+    def getStruct(self, id):
+        env = self
+        while(env != None):
+            if id in env.structs:
+                return env.structs.get(id)
             env = env.entorno_anterior
         return None        
 
