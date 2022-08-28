@@ -17,6 +17,7 @@ from .expresiones.vector_index import *
 from .expresiones.vector_complete import *
 from .expresiones.atributo_struct import *
 from .expresiones.generar_struct import *
+from .expresiones.access_index import *
 from .symbol.environment import *
 from .instrucciones.statement import *
 from .instrucciones.assigment import *
@@ -635,6 +636,25 @@ def p_expresiones_10(p):
     expresiones : IDENTIFICADOR LLAVEAP lista_atributos LLAVECL
     '''
     p[0] = Generar_struct(p.lineno(1), p.lexpos(1), p[1], p[3], Type.STRUCT)
+
+def p_expresiones_11(p):
+    '''
+    expresiones : IDENTIFICADOR lista_indices
+    '''
+    p[0] = Access_index(p.lineno(1), p.lexpos(1), p[1], p[2])
+
+def p_lista_indices_1(p):
+    '''
+    lista_indices   :   lista_indices CORCHETEAP expresiones CORCHETECL
+    '''
+    p[1].append(p[3])
+    p[0] = p[1]
+
+def p_lista_indices_2(p):
+    '''
+    lista_indices   : CORCHETEAP expresiones CORCHETECL
+    '''
+    p[0] = [p[2]]
 
 def p_lista_atributos_1(p):
     '''
