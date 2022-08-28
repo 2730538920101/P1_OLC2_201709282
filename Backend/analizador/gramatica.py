@@ -505,13 +505,13 @@ def p_declaracion_variable(p):
     declaracion_variable    : LET asignacion
 		                    		     
     '''
-    p[0] = Declaration(p.lineno(1), p.lexpos(1), p[2], Type.NULL, False)
+    p[0] = Declaration(p.lineno(1), p.lexpos(1), p[2], False)
 
 def p_declaracion_variable_2(p):
     '''
     declaracion_variable    : LET MUT asignacion
     '''
-    p[0] = Declaration(p.lineno(1), p.lexpos(1), p[3], Type.NULL, True)
+    p[0] = Declaration(p.lineno(1), p.lexpos(1), p[3], True)
 
 def p_asignacion_1(p):
     '''
