@@ -4,10 +4,6 @@ class Arreglo():
         self.values = []
         self.tipado = Type.NULL
 
-    def getArray(self, index):
-        return self.values[index]
-
-    def setArray(self, index, value):
-        self.values[index] = value
+ 
 
         

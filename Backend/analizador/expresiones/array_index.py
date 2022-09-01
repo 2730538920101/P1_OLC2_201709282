@@ -2,6 +2,7 @@ from ..abstract.expresiones import *
 from ..abstract.retorno import *
 from ..symbol.environment import *
 from ..symbol.array import *
+from copy import copy
 
 
 class Array_index(Expresion):
@@ -20,7 +21,7 @@ class Array_index(Expresion):
         else:
             auxval = self.exp1.Ejecutar(environment)
             for val in range(index.value):
-                aux.values.append(auxval)
+                aux.values.append(copy(auxval))
             aux.tipado = auxval.tipado
             aux2.value = aux
             aux2.tipado = Type.ARRAY

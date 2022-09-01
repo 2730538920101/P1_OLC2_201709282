@@ -11,6 +11,9 @@ from analizador.symbol.array import *
 app = Flask(__name__)
 CORS(app)
 
+
+
+
 @app.route('/ping')
 def ping():
     return jsonify({'message':'PONG'})
@@ -37,6 +40,5 @@ def Analizar():
     #    print(tok)   
     print("SATISFACTORY ANALYSIS")
     return jsonify({"message":"SATISFACTORY ANALYSIS"})
-
 if __name__ == '__main__':
     app.run(debug=True, port=3000)

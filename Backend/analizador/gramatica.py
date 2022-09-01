@@ -18,6 +18,7 @@ from .expresiones.vector_complete import *
 from .expresiones.atributo_struct import *
 from .expresiones.generar_struct import *
 from .expresiones.access_index import *
+from .expresiones.struct_access import *
 from .symbol.environment import *
 from .instrucciones.statement import *
 from .instrucciones.assigment import *
@@ -35,6 +36,7 @@ from .instrucciones.array_assigment import *
 from .instrucciones.vector_assigment_new import *
 from .instrucciones.declaracion_struct import *
 from .instrucciones.declaracion_atributo_struct import *
+from .instrucciones.access_assigment import *
 
 
 
@@ -276,6 +278,7 @@ def p_instruccion(p):
     instruccion : declaracion_variable
 		        | asignacion
 	            | expresiones
+                | asignacion_arr
     '''
     p[0] = p[1]
 
@@ -448,7 +451,7 @@ def p_default_exp_2(p):
     case5 = Case(p.lineno(1), p.lexpos(1), None, code3)
     p[0] = [case5]
 
-def p_default_exp_2(p):
+def p_default_exp_3(p):
     '''
     default_exp : GBAJO DOBFLECHA entorno
     '''
@@ -554,6 +557,11 @@ def p_asignacion_4(p):
     '''
     p[0] = Vector_assigment_new(p.lineno(1), p.lexpos(1), p[1], p[5], p[8])
 
+def p_asignacion_arr(p):
+    '''
+    asignacion_arr  : IDENTIFICADOR lista_indices IGUAL expresiones
+    '''
+    p[0] = Access_assigment(p.lineno(1), p.lexpos(1), p[1], p[2],p[4])
 
 def p_tipo_array(p):
     '''
@@ -642,6 +650,12 @@ def p_expresiones_11(p):
     expresiones : IDENTIFICADOR lista_indices
     '''
     p[0] = Access_index(p.lineno(1), p.lexpos(1), p[1], p[2])
+
+def p_expresiones_12(p):
+    '''
+    expresiones : IDENTIFICADOR PUNTO IDENTIFICADOR
+    '''
+    p[0] = Struct_access(p.lineno(1), p.lexpos(1), p[1], p[3])
 
 def p_lista_indices_1(p):
     '''

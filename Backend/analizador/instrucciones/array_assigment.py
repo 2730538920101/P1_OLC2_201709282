@@ -38,9 +38,9 @@ class Array_assigment(Instruccion):
                         print("ERROR SEMANTICO, EL ARREGLO ASIGNADO NO TIENE LOS INDICES ESPECIFICADOS EN LA ASIGNACION")
                     else:
                         if var.mutabilidad == True:
-                            environment.guardarVariables(self.id, self.value.Ejecutar(environment).value, Type.ARRAY, True)
+                            environment.guardarVariables(self.id, self.value.Ejecutar(environment).value.values, Type.ARRAY, True)
                         else:
-                            environment.guardarVariables(self.id, self.value.Ejecutar(environment).value, Type.ARRAY, False)
+                            environment.guardarVariables(self.id, self.value.Ejecutar(environment).value.values, Type.ARRAY, False)
                 else:
                     print("ERROR SEMANTICO, EL TIPO DE DATO DEL ARREGLO NO COINCIDE CON EL TIPO DE DATO DE LA DECLARACION")
             else:

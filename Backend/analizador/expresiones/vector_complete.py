@@ -34,6 +34,7 @@ class Vector_complete(Expresion):
                     print("ERROR SEMANTICO, LOS ELEMENTOS DEL VECTOR DEBEN SER DEL MISMO TIPO")
                     return    
         arr.capacidad = len(arr.values)
+        arr.tipado = tipadoaux
         aux.value = arr
         aux.tipado = Type.VECTOR
         return aux

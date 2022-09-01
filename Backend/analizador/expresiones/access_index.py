@@ -18,22 +18,20 @@ class Access_index(Expresion):
                     aux = Retorno()
                     auxv = val.valor
                     for x in range(len(self.indices)):
-                        if isinstance(auxv, Vector) or isinstance(auxv, Arreglo):
-                            auxv = auxv.values
                         if self.indices[x].tipado == Type.I64:
-                            auxv = auxv.pop(self.indices[x].valor)
-                            if isinstance(auxv, Retorno):
-                                tip = auxv.tipado
-                                auxv = auxv.value      
+                            if x == 0:
+                                auxv = auxv[self.indices[x].valor]
+                            else:
+                                auxv = auxv.value.values[self.indices[x].valor]
                         else:
                             print("ERROR SEMANTICO, LOS INDICES DEBEN SER UN VALOR ENTERO")
-                    aux.tipado = tip
-                    aux.value = auxv
+                    aux.tipado = auxv.tipado
+                    aux.value = auxv.value
                     return aux
                 else:
                     print("ERROR SEMANTICO, SOLO SE PUEDE ACCEDER A EXPRESONES ITERABLES ARRAY O VECTOR")
             else:
-                print("LA VARIABLE NO HA SIDO DECLARADA")
+                print("ERROR SEMANTICO, LA VARIABLE NO HA SIDO DECLARADA")
         except:
             print("ERROR SEMANTICO, ELEMENTO ACCEDIDO INVALIDO")
   

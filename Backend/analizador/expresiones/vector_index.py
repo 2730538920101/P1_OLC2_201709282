@@ -2,6 +2,7 @@ from ..abstract.expresiones import *
 from ..abstract.retorno import *
 from ..symbol.environment import *
 from ..symbol.vector import *
+from copy import copy
 
 
 class Vector_index(Expresion):
@@ -20,10 +21,11 @@ class Vector_index(Expresion):
         else:
             auxval = self.exp1.Ejecutar(environment)
             for val in range(index.value):
-                aux.values.append(auxval)
+                aux.values.append(copy(auxval))
+            aux.tipado = auxval.tipado
+            aux.capacidad = index.value
             aux2.value = aux
             aux2.tipado = Type.VECTOR
-            aux2.capacidad = index.value
         return aux2
                 
                 
