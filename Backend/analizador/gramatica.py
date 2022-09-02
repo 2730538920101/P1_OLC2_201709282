@@ -37,6 +37,7 @@ from .instrucciones.vector_assigment_new import *
 from .instrucciones.declaracion_struct import *
 from .instrucciones.declaracion_atributo_struct import *
 from .instrucciones.access_assigment import *
+from .instrucciones.struct_assigment import *
 
 
 
@@ -279,6 +280,7 @@ def p_instruccion(p):
 		        | asignacion
 	            | expresiones
                 | asignacion_arr
+                | asignacion_struct
     '''
     p[0] = p[1]
 
@@ -562,6 +564,12 @@ def p_asignacion_arr(p):
     asignacion_arr  : IDENTIFICADOR lista_indices IGUAL expresiones
     '''
     p[0] = Access_assigment(p.lineno(1), p.lexpos(1), p[1], p[2],p[4])
+
+def p_asignacion_struct(p):
+    '''
+    asignacion_struct   : IDENTIFICADOR PUNTO IDENTIFICADOR IGUAL expresiones
+    '''
+    p[0] = Struct_assigment(p.lineno(1), p.lexpos(1), p[1], p[3], p[5])
 
 def p_tipo_array(p):
     '''
