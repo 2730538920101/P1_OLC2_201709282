@@ -1,3 +1,4 @@
+import math
 from .literal import Literal
 from .access import Access
 from ..abstract.expresiones import *
@@ -12,7 +13,9 @@ class ArithmeticOption(Enum):
     MULTIPLICACION = 2,
     DIVISION = 3,
     MODULO = 4,
-    UNARIO = 5
+    UNARIO = 5,
+    POTENCIA = 6
+    RAIZ = 7
 
 class Arithmetic(Expresion):
     def __init__(self, linea, columna, valor1, valor2, tipoOp):
@@ -24,15 +27,9 @@ class Arithmetic(Expresion):
     def Ejecutar(self, environment):
         resultado = Retorno()
         if self.valor1 != None:
-            if isinstance(self.valor1, Access):    
-                leftvalue = self.valor1.Ejecutar(environment).value
-            else:
-                leftvalue = self.valor1.Ejecutar(environment)
+            leftvalue = self.valor1.Ejecutar(environment)
         if self.valor2 != None:
-            if isinstance(self.valor2, Access):
-                rightvalue = self.valor2.Ejecutar(environment).value
-            else:
-                rightvalue = self.valor2.Ejecutar(environment)
+            rightvalue = self.valor2.Ejecutar(environment)
         try:
             if self.tipoOp == ArithmeticOption.SUMA:
                 dominanteSuma = self.DominanteSuma(leftvalue.tipado, rightvalue.tipado)
@@ -43,7 +40,7 @@ class Arithmetic(Expresion):
                     resultado.value = leftvalue.value + rightvalue.value
                     resultado.tipado = Type.F64
                 elif dominanteSuma == Type.STRING:
-                    resultado.value = leftvalue.value + rightvalue.value
+                    resultado.value = str(leftvalue.value) + str(rightvalue.value)
                     resultado.tipado = Type.STRING                
                 else:
                     print("ERROR SEMANTICO EN LA SUMA")
@@ -100,7 +97,21 @@ class Arithmetic(Expresion):
                     resultado.tipado = Type.F64
                 else:
                     print("ERROR SEMANTICO EN OPERACION UNARIA")
+            elif self.tipoOp == ArithmeticOption.POTENCIA:
+                dominantePotencia = self.DominantePotencia(leftvalue.tipado, rightvalue.tipado)
+                if dominantePotencia == Type.I64:
+                    resultado.value = pow(leftvalue.value, rightvalue.value)
+                    resultado.tipado = Type.I64
+                elif dominantePotencia == Type.F64:
+                    resultado.value = round(math.pow(leftvalue.value, rightvalue.value),2)
+                    resultado.tipado == Type.F64
+                else:
+                    print("ERROR SEMANTICO EN OPERACION POTENCIA")
+            elif self.tipoOp == ArithmeticOption.RAIZ:
+                dominanteRaiz = self.DominanteRaiz(rightvalue.tipado)
+                if dominanteRaiz == Type.I64 or dominanteRaiz == Type.F64:
+                    resultado.value = round(math.sqrt(rightvalue.value),2)
+                    resultado.tipado = Type.F64
             return resultado
-
         except:
             print("ERROR EN LA OPERACION ARITMETICA")

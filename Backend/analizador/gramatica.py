@@ -1,6 +1,8 @@
 import ply.lex as lex
 import ply.yacc as yacc
 
+
+
 from .abstract.expresiones import *
 from .abstract.instrucciones import *
 from .abstract.retorno import *
@@ -19,6 +21,13 @@ from .expresiones.atributo_struct import *
 from .expresiones.generar_struct import *
 from .expresiones.access_index import *
 from .expresiones.struct_access import *
+from .expresiones.clone import *
+from .expresiones.abs import *
+from .expresiones.chars import *
+from .expresiones.len import *
+from .expresiones.capacity import *
+from .expresiones.contains import *
+from .expresiones.casting_str_string import *
 from .symbol.environment import *
 from .instrucciones.statement import *
 from .instrucciones.assigment import *
@@ -38,7 +47,9 @@ from .instrucciones.declaracion_struct import *
 from .instrucciones.declaracion_atributo_struct import *
 from .instrucciones.access_assigment import *
 from .instrucciones.struct_assigment import *
-
+from .instrucciones.push import *
+from .instrucciones.insert import *
+from .instrucciones.remove import *
 
 
 reservadas = {
@@ -594,6 +605,7 @@ def p_expresiones(p):
                 | transferencia
                 | casting
                 | expresiones PCOMA
+                | funciones_vectores
                
     '''
     p[0] = p[1]
@@ -731,6 +743,19 @@ def p_expresiones_aritmeticas_2(p):
     '''
     p[0] = Arithmetic(p.lineno(1), p.lexpos(1), None, p[2], ArithmeticOption.UNARIO)
 
+def p_expresiones_aritmeticas_3(p):
+    '''
+    expresiones_aritmeticas : POW PARAP expresiones COMA expresiones PARCL
+                            | POWF PARAP expresiones COMA expresiones PARCL
+    '''
+    p[0] = Arithmetic(p.lineno(1), p.lexpos(1), p[3], p[5], ArithmeticOption.POTENCIA)
+
+def p_expresiones_aritmeticas_4(p):
+    '''
+    expresiones_aritmeticas : expresiones PUNTO SQRT PARAP PARCL 
+    '''
+    p[0] = Arithmetic(p.lineno(1), p.lexpos(1), None, p[1], ArithmeticOption.RAIZ)
+
 def p_expresiones_logicas_1(p):
     '''
     expresiones_logicas : expresiones AND expresiones
@@ -776,11 +801,73 @@ def p_especiales_1(p):
     '''
     p[0] = Casting(p.lineno(1), p.lexpos(1), p[1], p[3])
 
+def p_especiales_2(p):
+    '''
+    casting : expresiones PUNTO TO_STRING PARAP PARCL
+            | expresiones PUNTO TO_OWNED PARAP PARCL
+    '''
+    p[0] = Casting_str_string(p.lineno(1), p.lexpos(1), p[1])
+
+def p_especiales_3(p):
+    '''
+    casting : expresiones PUNTO CLONE PARAP PARCL
+    '''
+    p[0] = Clone(p.lineno(1), p.lexpos(1), p[1])
+
+def p_especiales_4(p):
+    '''
+    casting : expresiones PUNTO ABS PARAP PARCL
+    '''
+    p[0] = Abs(p.lineno(1), p.lexpos(1), p[1])
+
+def p_especiales_5(p):
+    '''
+    casting : expresiones PUNTO CHARS PARAP PARCL
+    '''
+    p[0] = Chars(p.lineno(1), p.lexpos(1), p[1])
+
+
+def p_funciones_vectores_1(p):
+    '''
+    funciones_vectores  : IDENTIFICADOR PUNTO PUSH PARAP expresiones PARCL
+    '''
+    p[0] = Push(p.lineno(1), p.lexpos(1), p[1], p[5])
+
+def p_funciones_vectores_2(p):
+    '''
+    funciones_vectores  : IDENTIFICADOR PUNTO REMOVE PARAP expresiones PARCL
+    '''
+    p[0] = Remove(p.lineno(1), p.lexpos(1), p[1], p[5])
+
+def p_funciones_vectores_3(p):
+    '''
+    funciones_vectores  : IDENTIFICADOR PUNTO INSERT PARAP expresiones COMA expresiones PARCL
+    '''
+    p[0] = Insert(p.lineno(1), p.lexpos(1), p[1], p[7], p[5])
+
+def p_funciones_vectores_4(p):
+    '''
+    funciones_vectores  : IDENTIFICADOR PUNTO LEN PARAP PARCL
+    '''
+    p[0] = Len(p.lineno(1), p.lexpos(1), p[1])
+
+def p_funciones_vectores_5(p):
+    '''
+    funciones_vectores  : IDENTIFICADOR PUNTO CAPACITY PARAP PARCL
+    '''
+    p[0] = Capacity(p.lineno(1), p.lexpos(1), p[1])
+
+def p_funciones_vectores_6(p):
+    '''
+    funciones_vectores  : IDENTIFICADOR PUNTO CONTAINS PARAP CONCAT expresiones PARCL
+    '''
+    p[0] = Contains(p.lineno(1), p.lexpos(1), p[1], p[6])
+
 def p_valores_1(p):
     '''
     valores : CADENA
     '''
-    p[0] = Literal(p.lineno(1), p.lexpos(1), p[1], Type.STRING)
+    p[0] = Literal(p.lineno(1), p.lexpos(1), p[1], Type.STR)
 
 def p_valores_2(p):
     '''

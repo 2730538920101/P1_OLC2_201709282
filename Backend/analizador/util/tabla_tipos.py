@@ -63,3 +63,11 @@ TablaUnario = [
     [Type.NULL]
 ]
 
+TablaRaiz = [
+    [Type.F64],
+    [Type.F64],
+    [Type.NULL],
+    [Type.NULL],
+    [Type.NULL],
+    [Type.NULL]
+]

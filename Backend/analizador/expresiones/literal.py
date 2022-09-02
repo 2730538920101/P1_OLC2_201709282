@@ -12,15 +12,13 @@ class Literal(Expresion):
         print("EJECUTANDO LITERAL")
         aux = Retorno()
         if self.tipado.value[0] == 0:
-            aux.__init__(self.valor, Type.I64)
+            aux.__init__(int(self.valor), Type.I64)
         elif self.tipado.value[0] == 1:
-            aux.__init__(self.valor, Type.F64)
+            aux.__init__(float(self.valor), Type.F64)
         elif self.tipado.value[0] == 2:
-            aux.__init__(self.valor, Type.CHAR)
-        elif self.tipado.value[0] == 3:
-            aux.__init__(self.valor, Type.STRING)
+            aux.__init__(str(self.valor), Type.CHAR)
         elif self.tipado.value[0] == 4:
-            aux.__init__(self.valor, Type.STR)
+            aux.__init__(str(self.valor), Type.STR)
         elif self.tipado.value[0] == 5:
             aux.__init__(self.valor, Type.BOOL) 
         elif self.tipado.value[0] == 6:

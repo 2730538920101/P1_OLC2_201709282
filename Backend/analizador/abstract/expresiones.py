@@ -40,4 +40,6 @@ class Expresion(metaclass=ABCMeta):
         tipado = TablaUnario[tipo1.value[0]][0]
         return tipado
 
-    
+    def DominanteRaiz(self, tipo1):
+        tipado = TablaRaiz[tipo1.value[0]][0]
+        return tipado
