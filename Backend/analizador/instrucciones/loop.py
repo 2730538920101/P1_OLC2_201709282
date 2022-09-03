@@ -17,6 +17,6 @@ class Loop(Instruccion):
                 elif element.tipado == Type.CONTINUE:
                     continue
                 else:
-                    return element
+                    break
            
 

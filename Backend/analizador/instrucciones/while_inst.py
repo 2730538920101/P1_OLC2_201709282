@@ -8,22 +8,24 @@ class While(Instruccion):
         self.condicion = condicion
         self.code = code
 
-    def Ejecutar(self, environment):
-        cond = self.condicion.Ejecutar(environment)
-        if cond.tipado == Type.BOOL:
-            print("ERROR SEMANTICO, NO SE PUEDE EJECUTAR UN CICLO WHILE CON UNA VARIABLE DE TIPO DIFERENTE DE BOOL")
-        else:
-            while cond.value == True:
-                element = self.code.Ejecutar(environment)
-                if element != None:
-                    if element.tipado == Type.BREAK:
-                        break
-                    elif element.tipado == Type.CONTINUE:
-                        continue
-                    else:
-                        return element
-                cond = self.condicion.Ejecutar(environment)
-                if cond.tipado != Type.BOOL:
-                    print("ERROR SEMANTICO, NO SE PUEDE EJECUTAR UN CICLO WHILE CON UNA VARIABLE DE TIPO DIFERENTE DE BOOL")
-                    
+    def Ejecutar(self, environment):  
+        sigue = True
+        while sigue == True:
+            self.condicion.Ejecutar(environment)
+            if self.condicion.Ejecutar(environment).tipado != Type.BOOL:
+                if self.condicion.Ejecutar(environment).value:
+                    element = self.code.Ejecutar(environment)
+                    if element != None:
+                        if element.tipado == Type.BREAK:
+                            sigue = False
+                            break
+                        elif element.tipado == Type.CONTINUE:
+                            continue
+                        else:
+                            sigue = False
+                            break
+                else:
+                    sigue = False
+            else:
+                sigue = False        
 

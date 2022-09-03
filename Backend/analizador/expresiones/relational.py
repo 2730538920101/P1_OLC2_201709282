@@ -22,15 +22,9 @@ class Relational(Expresion):
     def Ejecutar(self, environment):
         print("EJECUTANDO RELATIONAL")
         if self.valor1 != None:
-            if isinstance(self.valor1, Access):    
-                leftvalue = self.valor1.Ejecutar(environment).value
-            else:
-                leftvalue = self.valor1.Ejecutar(environment)
+            leftvalue = self.valor1.Ejecutar(environment)
         if self.valor2 != None:
-            if isinstance(self.valor2, Access):
-                rightvalue = self.valor2.Ejecutar(environment).value
-            else:
-                rightvalue = self.valor2.Ejecutar(environment)
+            rightvalue = self.valor2.Ejecutar(environment)
         resultado = Retorno()
         if self.tipoOp == RelationalOption.DOBIGUAL:
             resultado.value = leftvalue.value == rightvalue.value

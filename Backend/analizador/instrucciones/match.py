@@ -20,7 +20,7 @@ class Match(Instruccion):
                         element = caso.Ejecutar(environment)
                         if element != None:
                             if element.tipado == Type.BREAK:
-                                break
+                                return element
                             elif element.tipado == Type.CONTINUE:
                                 continue
                             else:
@@ -31,7 +31,7 @@ class Match(Instruccion):
                 elemento = caso.Ejecutar(environment)
                 if elemento != None:
                         if elemento.tipado == Type.BREAK:
-                            break
+                            return elemento
                         elif elemento.tipado == Type.CONTINUE:
                             continue
                         else:

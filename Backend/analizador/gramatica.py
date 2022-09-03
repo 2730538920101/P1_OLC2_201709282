@@ -28,6 +28,7 @@ from .expresiones.len import *
 from .expresiones.capacity import *
 from .expresiones.contains import *
 from .expresiones.casting_str_string import *
+from .expresiones.range import *
 from .symbol.environment import *
 from .instrucciones.statement import *
 from .instrucciones.assigment import *
@@ -41,6 +42,7 @@ from .instrucciones.return_inst import *
 from .instrucciones.loop import *
 from .instrucciones.match import *
 from .instrucciones.case import *
+from .instrucciones.for_inst import *
 from .instrucciones.array_assigment import *
 from .instrucciones.vector_assigment_new import *
 from .instrucciones.declaracion_struct import *
@@ -366,6 +368,7 @@ def p_generar_for(p):
     '''
     generar_for : FOR IDENTIFICADOR IN expresiones entorno 
     '''
+    p[0] = For(p.lineno(1), p.lexpos(1), p[2], p[4], p[5])
 
 def p_generar_loop(p):
     '''
@@ -676,6 +679,12 @@ def p_expresiones_12(p):
     expresiones : IDENTIFICADOR PUNTO IDENTIFICADOR
     '''
     p[0] = Struct_access(p.lineno(1), p.lexpos(1), p[1], p[3])
+
+def p_expresiones_13(p):
+    '''
+    expresiones : expresiones PUNTO PUNTO expresiones
+    '''
+    p[0] = Range(p.lineno(1), p.lexpos(1), p[1], p[4])
 
 def p_lista_indices_1(p):
     '''

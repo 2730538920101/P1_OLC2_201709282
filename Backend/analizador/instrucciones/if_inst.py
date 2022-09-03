@@ -16,9 +16,22 @@ class If(Instruccion):
             print("ERROR SEMANTICO, LA EXPRESION DEBE SER DE TIPO BOOL")
         else:
             if cond.value == True:
-                return self.expif.Ejecutar(environment)
+                element = self.expif.Ejecutar(environment)
+                if element != None:
+                    if element.tipado == Type.BREAK:
+                        return element
+                    elif element.tipado == Type.CONTINUE:
+                        pass
+                    else:
+                        return element
             elif cond.value == False:
                 if self.expel != Type.NULL:
-                    return self.expel.Ejecutar(environment)
-                
+                    elemento = self.expel.Ejecutar(environment)
+                    if elemento != None:
+                        if elemento.tipado == Type.BREAK:
+                            return elemento
+                        elif elemento.tipado == Type.CONTINUE:
+                            pass
+                        else:
+                            return elemento
                     
