@@ -1,4 +1,4 @@
-class Declaracion_atributo_struct():
+class Declaracion_atributo():
     def __init__(self, linea, columna, id, tipado):
         self.linea = linea
         self.columna = columna

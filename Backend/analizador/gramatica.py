@@ -29,6 +29,9 @@ from .expresiones.capacity import *
 from .expresiones.contains import *
 from .expresiones.casting_str_string import *
 from .expresiones.range import *
+from .expresiones.tipo_param import *
+from .expresiones.parametros_declaracion import *
+from .expresiones.tipo_retorno import *
 from .symbol.environment import *
 from .instrucciones.statement import *
 from .instrucciones.assigment import *
@@ -46,12 +49,13 @@ from .instrucciones.for_inst import *
 from .instrucciones.array_assigment import *
 from .instrucciones.vector_assigment_new import *
 from .instrucciones.declaracion_struct import *
-from .instrucciones.declaracion_atributo_struct import *
+from .instrucciones.declaracion_atributo import *
 from .instrucciones.access_assigment import *
 from .instrucciones.struct_assigment import *
 from .instrucciones.push import *
 from .instrucciones.insert import *
 from .instrucciones.remove import *
+from .instrucciones.funcion import *
 
 
 reservadas = {
@@ -284,6 +288,7 @@ def p_global(p):
     '''
     global  : instruccion
             | declaracion_struct
+            | declaracion_funciones
     '''
     p[0] = p[1]
 
@@ -502,23 +507,113 @@ def p_lista_instrucciones(p):
 
 def p_declaracion_struct(p):
     '''
-    declaracion_struct  : STRUCT IDENTIFICADOR LLAVEAP lista_atributos_struct LLAVECL
+    declaracion_struct  : STRUCT IDENTIFICADOR LLAVEAP lista_atributos_declaracion LLAVECL
     '''
     p[0] = Declaracion_struct(p.lineno(1), p.lexpos(1), p[2], p[4], Type.STRUCT)
 
 def p_lista_atributos_struct_1(p):
     '''
-    lista_atributos_struct :   lista_atributos_struct COMA IDENTIFICADOR DOSPUNTOS tipo_dato
+    lista_atributos_declaracion :   lista_atributos_declaracion COMA IDENTIFICADOR DOSPUNTOS tipo_dato
     '''
-    atr = Declaracion_atributo_struct(p.lineno(3), p.lexpos(3), p[3], p[5])
+    atr = Declaracion_atributo(p.lineno(3), p.lexpos(3), p[3], p[5])
     p[1].append(atr)
     p[0] = p[1] 
 
 def p_lista_atributos_struct_2(p):
     '''
-    lista_atributos_struct :   IDENTIFICADOR DOSPUNTOS tipo_dato
+    lista_atributos_declaracion :   IDENTIFICADOR DOSPUNTOS tipo_dato
     '''
-    p[0] = [Declaracion_atributo_struct(p.lineno(1), p.lexpos(1), p[1], p[3])]
+    p[0] = [Declaracion_atributo(p.lineno(1), p.lexpos(1), p[1], p[3])]
+
+def p_lista_parametros_1(p):
+    '''
+    lista_parametros    : lista_parametros COMA IDENTIFICADOR DOSPUNTOS tipo_param
+    '''
+    atr = Parametros_declaracion(p.lineno(1), p.lexpos(1), p[3], p[5])
+    p[1].append(atr)
+    p[0] = p[1]
+
+def p_lista_parametros_2(p):
+    '''
+    lista_parametros    :   IDENTIFICADOR DOSPUNTOS tipo_param
+    '''
+    p[0] = [Parametros_declaracion(p.lineno(1), p.lexpos(1), p[1], p[3])]
+
+def p_tipo_param_1(p):
+    '''
+    tipo_param  : CONCAT MUT CORCHETEAP tipo_dato CORCHETECL
+    '''
+    p[0] = Tipo_param(p.lineno(1), p.lexpos(1), p[1], True, False, False, False)
+
+def p_tipo_param_2(p):
+    '''
+    tipo_param  : CONCAT MUT tipo_array
+    '''
+    p[0] = Tipo_param(p.lineno(1), p.lexpos(1), p[3], False, True, False, False)
+
+def p_tipo_param_3(p):
+    '''
+    tipo_param  : CONCAT MUT VECMAY MENOR tipo_dato MAYOR
+    '''
+    p[0] = Tipo_param(p.lineno(1), p.lexpos(1), p[5], False, False, True, False)
+
+def p_tipo_param_4(p):
+    '''
+    tipo_param  : tipo_dato
+    '''
+    p[0] = Tipo_param(p.lineno(1), p.lexpos(1), p[1], False, False, False, False)
+
+def p_tipo_retorno_1(p):
+    '''
+    tipo_retorno    : tipo_dato
+    '''
+    p[0] = Tipo_retorno(p.lineno(1), p.lexpos(1), p[1], False, False, False, False)
+
+def p_tipo_retorno_2(p):
+    '''
+    tipo_retorno    : CORCHETEAP tipo_dato CORCHETECL
+    '''
+    p[0] = Tipo_retorno(p.lineno(1), p.lexpos(1), p[1], True, False, False, False)
+
+
+def p_tipo_retorno_3(p):
+    '''
+    tipo_retorno    : tipo_array
+    '''
+    p[0] = Tipo_retorno(p.lineno(1), p.lexpos(1), p[1], False, True, False, False)
+
+def p_tipo_retorno_4(p):
+    '''
+    tipo_retorno    : VECMAY MENOR tipo_dato MAYOR 
+    '''
+    p[0] = Tipo_retorno(p.lineno(1), p.lexpos(1), p[1], False, False, True, False)
+
+def p_declaracion_funciones_1(p):
+    '''
+    declaracion_funciones   : FN IDENTIFICADOR PARAP lista_parametros PARCL entorno
+    '''
+    p[0] = Funcion(p.lineno(1), p.lexpos(1), p[2], Type.NULL, p[6], p[4], False)
+
+def p_declaracion_funciones_2(p):
+    '''
+    declaracion_funciones   : FN IDENTIFICADOR PARAP lista_parametros PARCL FLECHA tipo_retorno entorno
+    '''
+    p[0] = Funcion(p.lineno(1), p.lexpos(1), p[2], p[7], p[8], p[4], False)
+
+
+def p_declaracion_funciones_3(p):
+    '''
+    declaracion_funciones   : PUB FN IDENTIFICADOR PARAP lista_parametros PARCL entorno
+    '''
+    p[0] = Funcion(p.lineno(1), p.lexpos(1), p[3], Type.NULL, p[7], p[5], True)
+
+def p_declaracion_funciones_4(p):
+    '''
+    declaracion_funciones   : PUB FN IDENTIFICADOR PARAP lista_parametros PARCL FLECHA tipo_retorno entorno
+    '''
+    p[0] = Funcion(p.lineno(1), p.lexpos(1), p[3], p[8], p[9], p[5], True)
+
+
 
 def p_declaracion_variable(p):
     '''
@@ -589,7 +684,7 @@ def p_tipo_array(p):
     '''
     tipo_array  : CORCHETEAP tipo_dato PCOMA NUMERO CORCHETECL
     '''
-    p[0] = Array_type(p[2], [p[4]])
+    p[0] = Array_type(p.lineno(1), p.lexpos(1), p[2], [p[4]])
 
 def p_tipo_array_2(p):
     '''
@@ -920,6 +1015,7 @@ def p_tipo_dato(p):
                 | CONCAT STR
                 | USIZE
                 | STRUCT
+                | IDENTIFICADOR
     '''
     if p[1] == "i64":
         p[0] = Type.I64
@@ -937,9 +1033,9 @@ def p_tipo_dato(p):
         p[0] = Type.USIZE
     elif p[1] == "struct":
         p[0] = Type.STRUCT
-
-
-
+    else:
+        p[0] = p[1]
+    
 def p_error(p):
     print("ERROR SINTACTICO EN EL TOKEN: ", p.type, "EN LA LINEA: ", p.lexer.lineno, "EN LA COLUMNA: ", p.lexpos)
           

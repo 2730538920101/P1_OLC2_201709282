@@ -43,16 +43,16 @@ class Entorno():
         self.structs[id]= sim2
         TablaSimbolos.append(sim2)
 
-    def guardarFunciones(self, id, funcion):
+    def guardarFunciones(self, id, funcion, mutabilidad = False, tipotoken = ClaseSym.FUNCION):
         env = self
         while(env != None):
             if id in env.funciones:
-                sim = Symbol(id, "FUNCION", funcion.tipado, mutabilidad = False, tipotoken = ClaseSym.FUNCION)
+                sim = Symbol(id, "FUNCION", funcion.tipado, mutabilidad, tipotoken = ClaseSym.FUNCION)
                 TablaSimbolos.append(sim)
                 env.funciones[id] = funcion
                 return
             env = env.entorno_anterior
-        sim2 = Symbol(id, "FUNCION", funcion.tipado, mutabilidad=False, tipotoken = ClaseSym.FUNCION)
+        sim2 = Symbol(id, "FUNCION", funcion.tipado, mutabilidad, tipotoken = ClaseSym.FUNCION)
         TablaSimbolos.append(sim2)
         self.funciones[id] = funcion
 
