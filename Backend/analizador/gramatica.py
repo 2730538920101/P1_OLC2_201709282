@@ -32,6 +32,7 @@ from .expresiones.range import *
 from .expresiones.tipo_param import *
 from .expresiones.parametros_declaracion import *
 from .expresiones.tipo_retorno import *
+from .expresiones.parametro_llamada import *
 from .symbol.environment import *
 from .instrucciones.statement import *
 from .instrucciones.assigment import *
@@ -56,7 +57,7 @@ from .instrucciones.push import *
 from .instrucciones.insert import *
 from .instrucciones.remove import *
 from .instrucciones.funcion import *
-
+from .instrucciones.llamada_funcion import *
 
 reservadas = {
     'String' : 'STRING',
@@ -704,6 +705,7 @@ def p_expresiones(p):
                 | casting
                 | expresiones PCOMA
                 | funciones_vectores
+                | llamada_funcion
                
     '''
     p[0] = p[1]
@@ -1004,6 +1006,36 @@ def p_valores_5(p):
         p[0] = Literal(p.lineno(1), p.lexpos(1), False, Type.BOOL)
 
 
+def p_llamada_funcion(p):
+    '''
+    llamada_funcion :   IDENTIFICADOR PARAP lista_parametros_llamada PARCL
+    '''
+    p[0] = Llamada_funcion(p.lineno(1), p.lexpos(1), p[1], p[3])
+
+def p_lista_parametros_llamada_1(p):
+    '''
+    lista_parametros_llamada    : lista_parametros_llamada COMA parametro_llamada
+    '''
+    p[1].append(p[3])
+    p[0] = p[1]
+
+def p_lista_parametros_llamada_2(p):
+    '''
+    lista_parametros_llamada    : parametro_llamada
+    '''
+    p[0] = [p[1]]
+
+def p_parametro_llamada_1(p):
+    '''
+    parametro_llamada   : CONCAT MUT expresiones
+    '''
+    p[0] = Parametro_llamada(p.lineno(1), p.lexpos(1), p[3], True)
+
+def p_parametro_llamada_2(p):
+    '''
+    parametro_llamada   : expresiones
+    '''
+    p[0] = Parametro_llamada(p.lineno(1), p.lexpos(1), p[1], False)
 
 def p_tipo_dato(p):
     '''

@@ -12,7 +12,7 @@ class Tipo_retorno(Expresion):
     def Ejecutar(self, environment):
         try:
             print("EJECUTANDO EL TIPADO DEL RETORNO")
-            val = environment.getVariable(self.tipado)
+            val = environment.getStruct(self.tipado)
             if val != None:
                 if val.tipado == Type.STRUCT:
                     self.isstruct = True

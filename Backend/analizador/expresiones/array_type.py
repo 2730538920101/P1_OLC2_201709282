@@ -10,7 +10,7 @@ class Array_type(Expresion):
     def Ejecuta(self, environment):
         print("EJECUTANDO TYPE ARRAY")
         try:
-            var = environment.getVariable(self.tipado)
+            var = environment.getStruct(self.tipado)
             if var != None:
                 if var.tipado == Type.STRUCT:
                     self.tipado = Type.STRUCT
