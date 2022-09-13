@@ -47,12 +47,12 @@ class Entorno():
         env = self
         while(env != None):
             if id in env.funciones:
-                sim = Symbol(id, "FUNCION", funcion.tipado, mutabilidad, tipotoken = ClaseSym.FUNCION)
+                sim = Symbol(id, funcion, funcion.tipado, mutabilidad, tipotoken = ClaseSym.FUNCION)
                 TablaSimbolos.append(sim)
                 env.funciones[id] = funcion
                 return
             env = env.entorno_anterior
-        sim2 = Symbol(id, "FUNCION", funcion.tipado, mutabilidad, tipotoken = ClaseSym.FUNCION)
+        sim2 = Symbol(id, funcion, funcion.tipado, mutabilidad, tipotoken = ClaseSym.FUNCION)
         TablaSimbolos.append(sim2)
         self.funciones[id] = funcion
 

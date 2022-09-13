@@ -1,6 +1,9 @@
+from ..expresiones.tipo_vector import *
+from ..expresiones.array_type import *
 from ..abstract.expresiones import *
 from ..symbol.environment import *
 from ..abstract.retorno import *
+from ..reportes.TablaSim import *
 
 class Generar_struct(Expresion):
     def __init__(self, linea, columna, id, code, tipado):
@@ -14,7 +17,10 @@ class Generar_struct(Expresion):
         aux = Retorno()
         varaux = environment.getStruct(self.id)
         if varaux == None:
-            print("ERROR SEMANTICO, EL STRUCT NO HA SIDO DECLARADO")
+            auxer = "ERROR SEMANTICO, EL STRUCT NO HA SIDO DECLARADO"
+            print(auxer)
+            TablaErrores.append(auxer)
+            Prints.append(auxer)
         else:
             try:
                 if varaux.id == self.id:
@@ -22,19 +28,35 @@ class Generar_struct(Expresion):
                         valoraux = self.code[x].exp.Ejecutar(environment)
                         idaux = self.code[x].id
                         if varaux.valor.atributos[x]== idaux:
-                            if valoraux.tipado == varaux.valor.tipados[x]:
+                            if isinstance(varaux.valor.tipados[x], Array_type) and (valoraux.tipado == Type.ARRAY):
+                                varaux.valor.valores.append(valoraux.value)
+                            elif isinstance(varaux.valor.tipados[x], Tipo_vector) and (valoraux.tipado == Type.VECTOR):
+                                varaux.valor.valores.append(valoraux.value)
+                            elif valoraux.tipado == varaux.valor.tipados[x]:
                                 varaux.valor.valores.append(valoraux.value)
                             else:
-                                print("ERROR SEMANTICO, EL ATRIBUTO NO ES DEL TIPO DE LA DECLARACION")
+                                auxer = "ERROR SEMANTICO, EL ATRIBUTO NO ES DEL TIPO DE LA DECLARACION"
+                                print(auxer)
+                                TablaErrores.append(auxer)
+                                Prints.append(auxer)
                         else:
-                            print("ERROR SEMANTICO, EL ATRIBUTO INGRESADO NO ES CORRECTO")
+                            auxer = "ERROR SEMANTICO, EL ATRIBUTO INGRESADO NO ES CORRECTO"
+                            print(auxer)
+                            TablaErrores.append(auxer)
+                            Prints.append(auxer)
                     aux.value = varaux.valor
                     aux.tipado = Type.STRUCT
                     return aux
                 else:
-                    print("ERROR SEMANTICO, EL STRUCT NO HA SIDO DECLARADO")
+                    auxer = "ERROR SEMANTICO, EL STRUCT NO HA SIDO DECLARADO"
+                    print(auxer)
+                    TablaErrores.append(auxer)
+                    Prints.append(auxer)
             except:
-                print("ERROR SEMANTICO, NO SE HA PODIDO INSTANCIAR EL STRUCT")
+                auxer = "ERROR SEMANTICO, NO SE HA PODIDO INSTANCIAR EL STRUCT"
+                print(auxer)
+                TablaErrores.append(auxer)
+                Prints.append(auxer)
             
 
 

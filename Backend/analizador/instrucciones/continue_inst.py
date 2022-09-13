@@ -8,6 +8,9 @@ class Continue(Instruccion):
         self.tipado = tipado
 
     def Ejecutar(self, environment):
-        return {'linea': self.linea, 'columna' : self.columna, 'tipado': self.tipado}
+        aux = Retorno()
+        aux.tipado = Type.CONTINUE
+        aux.value = None
+        return aux
     
 

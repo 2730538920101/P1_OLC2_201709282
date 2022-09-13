@@ -1,6 +1,7 @@
 from ..abstract.instrucciones import *
 from ..abstract.retorno import *
 from ..symbol.environment import *
+from ..reportes.TablaSim import *
 
 class For(Instruccion):
     def __init__(self, linea, columna, iden, exp2, code):
@@ -21,10 +22,18 @@ class For(Instruccion):
                         if element.tipado == Type.BREAK:
                             break
                         elif element.tipado == Type.CONTINUE:
-                            continue
+                            continue 
+                        elif element.tipado == Type.RETURN:
+                            return element
                         else:
-                            break
+                            return element
             else:
-                print("ERROR SEMANTICO, SOLO SE PUEDEN ITERAR EXPRESIONES DE TIPO ARRAY O VECTOR")
+                auxer = "ERROR SEMANTICO, SOLO SE PUEDEN ITERAR EXPRESIONES DE TIPO ARRAY O VECTOR"
+                print(auxer)
+                TablaErrores.append(auxer)
+                Prints.append(auxer)
         except:
-            print("ERROR SEMANTICO, LA SENTENCIA FOR IN NO ES VALIDA")
+            auxer = "ERROR SEMANTICO, LA SENTENCIA FOR IN NO ES VALIDA"
+            print(auxer)
+            TablaErrores.append(auxer)
+            Prints.append(auxer)

@@ -1,21 +1,24 @@
 from ..abstract.retorno import *
 
 TablaSuma = [
-    [Type.I64, Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.NULL],
-    [Type.NULL, Type.F64, Type.NULL, Type.NULL, Type.NULL, Type.NULL],
-    [Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.NULL],
-    [Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.STRING, Type.NULL],
-    [Type.NULL, Type.NULL, Type.NULL, Type.STRING, Type.NULL, Type.NULL],
-    [Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.NULL]  
+    #i64       #f64       #char      #string     #str      #null       #usize
+    [Type.I64, Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.USIZE],
+    [Type.NULL, Type.F64, Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.NULL],
+    [Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.NULL],
+    [Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.STRING, Type.NULL, Type.NULL],
+    [Type.NULL, Type.NULL, Type.NULL, Type.STRING, Type.NULL, Type.NULL, Type.NULL],
+    [Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.NULL],
+    [Type.USIZE, Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.USIZE]    
 ]
 
 TablaResta = [
-    [Type.I64, Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.NULL],
-    [Type.NULL, Type.F64, Type.NULL, Type.NULL, Type.NULL, Type.NULL],
-    [Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.NULL],
-    [Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.NULL],
-    [Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.NULL],
-    [Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.NULL]
+    [Type.I64, Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.USIZE],
+    [Type.NULL, Type.F64, Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.NULL],
+    [Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.NULL],
+    [Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.NULL],
+    [Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.NULL],
+    [Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.NULL],
+    [Type.USIZE, Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.NULL, Type.USIZE] 
 ]
 
 TablaMultiplicacion = [

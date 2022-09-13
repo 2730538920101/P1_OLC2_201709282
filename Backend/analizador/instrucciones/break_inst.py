@@ -12,8 +12,11 @@ class Break(Instruccion):
         aux = Retorno()
         if self.exp != None:
             val = self.exp.Ejecutar(environment)
-            aux.tipado = self.tipado
-            aux.value = val
-            return aux
+            aux.tipado = val.tipado
+            aux.value = val.value
+        else:
+            aux.tipado = Type.BREAK
+            aux.value = None
+        return aux
         
         

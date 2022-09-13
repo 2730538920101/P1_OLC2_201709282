@@ -15,8 +15,10 @@ class Loop(Instruccion):
                 if element.tipado == Type.BREAK:
                     break
                 elif element.tipado == Type.CONTINUE:
-                    continue
+                    continue 
+                elif element.tipado == Type.RETURN:
+                    return element
                 else:
-                    break
+                    return element
            
 

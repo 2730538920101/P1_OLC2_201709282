@@ -1,6 +1,7 @@
 from ..abstract.expresiones import * 
 from ..abstract.retorno import *
 from ..symbol.array import *
+from ..reportes.TablaSim import *
 
 class Chars(Expresion):
     def __init__(self, linea, columna, exp):
@@ -26,8 +27,19 @@ class Chars(Expresion):
                     aux.tipado = Type.ARRAY           
                     return aux
                 else:
-                    print("ERROR SEMANTICO, SOLO SE PUEDEN CONVERTIR A ARREGLOS LAS EXPRESIONES DE TIPO STRING")
+                    auxer = "ERROR SEMANTICO, SOLO SE PUEDEN CONVERTIR A ARREGLOS LAS EXPRESIONES DE TIPO STRING"
+                    print(auxer)
+                    TablaErrores.append(auxer)
+                    Prints.append(auxer)
             else:
-                print("ERROR SEMANTICO, ERROR EN LA EXPRESION")
+                auxer = "ERROR SEMANTICO, ERROR EN LA EXPRESION"
+                print(auxer)
+                TablaErrores.append(auxer)
+                Prints.append(auxer)
         except:
-            print("ERROR SEMANTICO, NO SE PUEDE CONVERTIR LA EXPRESION A UN ARREGLO")
+            auxer = "ERROR SEMANTICO, NO SE PUEDE CONVERTIR LA EXPRESION A UN ARREGLO"
+            print(auxer)
+            TablaErrores.append(auxer)
+            Prints.append(auxer)
+
+            

@@ -1,5 +1,7 @@
 from ..abstract.expresiones import *
 from ..abstract.retorno import *
+from ..expresiones.access import *
+from ..reportes.TablaSim import *
 
 class Capacity(Expresion):
     def __init__(self, linea, columna, id):
@@ -8,7 +10,10 @@ class Capacity(Expresion):
 
     def Ejecutar(self, environment):
         print("EJECUTANDO CAPACITY AL VECTOR")
+        
         try:
+            if isinstance(self.id, Access):
+                self.id = self.id.id
             var = environment.getVariable(self.id)
             if var != None:
                 if var.tipado == Type.VECTOR:
@@ -17,8 +22,17 @@ class Capacity(Expresion):
                     aux.tipado = Type.I64
                     return aux
                 else:
-                    print("ERROR SEMANTICO, LA VARIABLE NO ES UN VECTOR")
+                    auxer = "ERROR SEMANTICO, LA VARIABLE NO ES UN VECTOR"
+                    print(auxer)
+                    TablaErrores.append(auxer)
+                    Prints.append(auxer)
             else:
-                print("ERROR SEMANTICO, LA VARIABLE NO HA SIDO DECLARADA")
+                auxer = "ERROR SEMANTICO, LA VARIABLE NO HA SIDO DECLARADA"
+                print(auxer)
+                TablaErrores.append(auxer)
+                Prints.append(auxer)
         except:
-            print("ERROR SEMANTICO, VECTOR INVALIDO")
+            auxer = "ERROR SEMANTICO, VECTOR INVALIDO"
+            print(auxer)
+            TablaErrores.append(auxer)
+            Prints.append(auxer)

@@ -10,31 +10,30 @@ class Match(Instruccion):
         self.casos = casos
 
     def Ejecutar(self, environment):
-        actual = self.cambio.Ejecutar(environment)
+        print("EJECUTANDO MATCH")
+        val = self.cambio.Ejecutar(environment)
         for caso in self.casos:
-            casoexp = caso.getExp()
-            if casoexp != None:
-                casoactual = casoexp.Ejecutar(environment)
-                if actual.tipado == casoactual.tipado:
-                    if actual.value == casoactual.value:
-                        element = caso.Ejecutar(environment)
-                        if element != None:
+            c = caso.Ejecutar(environment)
+            for ex in c.exp:
+                if ex != "_":
+                    e = ex.Ejecutar(environment)
+                    if e.value == val.value:
+                        element = c.code.Ejecutar(environment)
+                        if isinstance(element, Retorno):
                             if element.tipado == Type.BREAK:
+                                break
+                            elif element.tipado == Type.RETURN:
                                 return element
                             elif element.tipado == Type.CONTINUE:
                                 continue
-                            else:
-                                return element
-                else:
-                    print("ERROR SEMANTICO, EL VALOR DE LA OPERACION A REALIZAR NO ES DEL MISMO TIPO QUE EL VALOR ASIGNADO POR LA SENTENCIA MATCH")                
-            else:
-                elemento = caso.Ejecutar(environment)
-                if elemento != None:
-                        if elemento.tipado == Type.BREAK:
-                            return elemento
-                        elif elemento.tipado == Type.CONTINUE:
-                            continue
-                        else:
-                            return elemento   
 
-            
+                else:
+                    element = c.code.Ejecutar(environment)
+                    if isinstance(element, Retorno):
+                        if element.tipado == Type.BREAK:
+                            break
+                        elif element.tipado == Type.RETURN:
+                            return element
+                        elif element.tipado == Type.CONTINUE:
+                            continue
+                    

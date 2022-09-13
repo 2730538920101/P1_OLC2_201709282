@@ -2,6 +2,7 @@ from .access import Access
 from ..abstract.expresiones import *
 from ..abstract.retorno import *
 from enum import Enum, unique
+from ..reportes.TablaSim import *
 
 @unique
 class RelationalOption(Enum):
@@ -41,9 +42,12 @@ class Relational(Expresion):
         elif self.tipoOp == RelationalOption.MENOR:
             resultado.value = leftvalue.value < rightvalue.value
             resultado.tipado = Type.BOOL
-        elif self.tipoOp == RelationalOption.MAYORIG:
+        elif self.tipoOp == RelationalOption.MENORIG:
             resultado.value = leftvalue.value <= rightvalue.value
             resultado.tipado = Type.BOOL
         else:
-            print("ERROR SEMANTICO EN EXPRESION RELACIONAL")
+            auxer = "ERROR SEMANTICO EN EXPRESION RELACIONAL"
+            print(auxer)
+            TablaErrores.append(auxer)
+            Prints.append(auxer)
         return resultado

@@ -16,12 +16,14 @@ import {MatButtonModule} from '@angular/material/button';
 import {MatGridListModule} from '@angular/material/grid-list';
 import {MatTabsModule} from '@angular/material/tabs';;
 import {MatTableModule} from '@angular/material/table';
+import { ErroresComponent } from './errores/errores.component';
 
 
 @NgModule({
   declarations: [
     InicioComponent,
-    EditorComponent
+    EditorComponent,
+    ErroresComponent
   ],
   imports: [
     CommonModule,
@@ -39,6 +41,7 @@ import {MatTableModule} from '@angular/material/table';
   exports:[
     InicioComponent,
     EditorComponent,
+    ErroresComponent,
     RouterModule
   ],
   providers:[

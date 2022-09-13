@@ -8,24 +8,31 @@ class While(Instruccion):
         self.condicion = condicion
         self.code = code
 
-    def Ejecutar(self, environment):  
+    def Ejecutar(self, environment):
+        print("EJECUTANDO SENTENCIA WHILE")  
         sigue = True
         while sigue == True:
-            self.condicion.Ejecutar(environment)
-            if self.condicion.Ejecutar(environment).tipado != Type.BOOL:
-                if self.condicion.Ejecutar(environment).value:
+            cond = self.condicion.Ejecutar(environment)
+            if cond.tipado == Type.BOOL:
+                if cond.value:
                     element = self.code.Ejecutar(environment)
                     if element != None:
                         if element.tipado == Type.BREAK:
                             sigue = False
                             break
                         elif element.tipado == Type.CONTINUE:
+                            sigue = True
                             continue
+                        elif element.tipado == Type.RETURN:
+                            sigue = False
+                            return element
                         else:
                             sigue = False
-                            break
+                            return element
                 else:
                     sigue = False
+                    break
             else:
-                sigue = False        
+                sigue = False
+                break        
 

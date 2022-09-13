@@ -1,0 +1,11 @@
+<div class="header">
+    <h1 class="titulo">TABLA DE ERRORES</h1>
+    <button class="btn" mat-raised-button color="accent" (click)="GenerarTabla()">CARGAR</button>
+</div>
+<div class="body">
+    <table>
+        <tr *ngFor = "let er of errores">
+            <td> {{er}} </td>
+        </tr>        
+    </table>
+</div>

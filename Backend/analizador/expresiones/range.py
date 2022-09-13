@@ -1,6 +1,7 @@
 from ..abstract.expresiones import *
 from ..abstract.retorno import *
 from ..symbol.array import *
+from ..reportes.TablaSim import *
 
 class Range(Expresion):
     def __init__(self, linea, columna, exp1, exp2):
@@ -28,8 +29,18 @@ class Range(Expresion):
                     aux.tipado = Type.ARRAY
                     return aux
                 else:
-                    print("ERROR SEMANTICO, LAS EXPRESIONES INGRESADAS DEBEN DE SER DE TIPO I64")
+                    auxer = "ERROR SEMANTICO, LAS EXPRESIONES INGRESADAS DEBEN DE SER DE TIPO I64"
+                    print(auxer)
+                    TablaErrores.append(auxer)
+                    Prints.append(auxer)
             else:
-                print("ERROR SEMANTICO, LAS EXPRESIONES INGRESADAS NO SON VALIDAS")
+                auxer = "ERROR SEMANTICO, LAS EXPRESIONES INGRESADAS NO SON VALIDAS"
+                print(auxer)
+                TablaErrores.append(auxer)
+                Prints.append(auxer)
         except:
-            print("ERROR SEMANTICO, NO SE PUEDE EJECUTAR EL RANGE")
+            auxer = "ERROR SEMANTICO, NO SE PUEDE EJECUTAR EL RANGE"
+            print(auxer)
+            TablaErrores.append(auxer)
+            Prints.append(auxer)
+            

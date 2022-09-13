@@ -4,6 +4,7 @@ from .access import Access
 from ..abstract.expresiones import *
 from ..abstract.retorno import *
 from enum import Enum, unique
+from ..reportes.TablaSim import *
 
 
 @unique
@@ -25,6 +26,8 @@ class Arithmetic(Expresion):
         self.tipoOp = tipoOp
 
     def Ejecutar(self, environment):
+        print("EJECUTANDO ARITHMETIC")
+        
         resultado = Retorno()
         if self.valor1 != None:
             leftvalue = self.valor1.Ejecutar(environment)
@@ -41,9 +44,15 @@ class Arithmetic(Expresion):
                     resultado.tipado = Type.F64
                 elif dominanteSuma == Type.STRING:
                     resultado.value = str(leftvalue.value) + str(rightvalue.value)
-                    resultado.tipado = Type.STRING                
+                    resultado.tipado = Type.STRING 
+                elif dominanteSuma == Type.USIZE:
+                    resultado.value = leftvalue.value + rightvalue.value
+                    resultado.tipado = Type.USIZE                
                 else:
-                    print("ERROR SEMANTICO EN LA SUMA")
+                    auxer = "ERROR SEMANTICO EN LA SUMA"
+                    print(auxer)
+                    TablaErrores.append(auxer)
+                    Prints.append(auxer)
             elif self.tipoOp == ArithmeticOption.RESTA:
                 dominanteResta = self.DominanteResta(leftvalue.tipado, rightvalue.tipado)
                 if dominanteResta == Type.I64:
@@ -52,8 +61,15 @@ class Arithmetic(Expresion):
                 elif dominanteResta == Type.F64:
                     resultado.value = leftvalue.value - rightvalue.value
                     resultado.tipado = Type.F64
+                elif dominanteResta == Type.USIZE:
+                    resultado.value = leftvalue.value - rightvalue.value
+                    resultado.tipado = Type.USIZE
                 else:
-                    print("ERROR SEMANTICO EN LA RESTA")
+                    auxer = "ERROR SEMANTICO EN LA RESTA"
+                    print(auxer)
+                    TablaErrores.append(auxer)
+                    Prints.append(auxer)
+
             elif self.tipoOp == ArithmeticOption.MULTIPLICACION:
                 dominanteMultiplicacion = self.DominanteMultiplicacion(leftvalue.tipado, rightvalue.tipado)
                 if dominanteMultiplicacion == Type.I64:
@@ -63,20 +79,26 @@ class Arithmetic(Expresion):
                     resultado.value = leftvalue.value * rightvalue.value
                     resultado.tipado = Type.F64
                 else:
-                    print("ERROR SEMANTICO EN LA MULTIPLICACION")
+                    auxer = "ERROR SEMANTICO EN LA MULTIPLICACION"
+                    print(auxer)
+                    TablaErrores.append(auxer)
+                    Prints.append(auxer)
             elif self.tipoOp == ArithmeticOption.DIVISION:
                 dominanteDivision = self.DominanteDivision(leftvalue.tipado, rightvalue.tipado)
                 if rightvalue.value == 0:
-                    print("ERROR SEMANTICO EN LA DIVISION")
+                    auxer = "ERROR SEMANTICO EN LA DIVISION"
+                    print(auxer)
+                    TablaErrores.append(auxer)
+                    Prints.append(auxer)
                 else:
-                    if dominanteDivision == Type.I64:
-                        resultado.value = leftvalue.value / rightvalue.value
-                        resultado.tipado = Type.F64
-                    elif dominanteDivision == Type.F64:
+                    if dominanteDivision == Type.F64:
                         resultado.value = leftvalue.value / rightvalue.value
                         resultado.tipado = Type.F64
                     else:
-                        print("ERROR SEMANTICO EN LA DIVISION")
+                        auxer = "ERROR SEMANTICO EN LA DIVISION"
+                        print(auxer)
+                        TablaErrores.append(auxer)
+                        Prints.append(auxer)
             elif self.tipoOp == ArithmeticOption.MODULO:
                 dominanteModulo = self.DominanteModulo(leftvalue.tipado, rightvalue.tipado)
                 if dominanteModulo == Type.I64:
@@ -86,7 +108,10 @@ class Arithmetic(Expresion):
                     resultado.value = leftvalue.value % rightvalue.value
                     resultado.tipado = Type.F64
                 else:
-                    print("ERROR SEMANTICO EN EL MODULO")
+                    auxer = "ERROR SEMANTICO EN EL MODULO"
+                    print(auxer)
+                    TablaErrores.append(auxer)
+                    Prints.append(auxer)
             elif self.tipoOp == ArithmeticOption.UNARIO:
                 dominanteUnario = self.DominanteUnario(rightvalue.tipado)
                 if dominanteUnario == Type.I64:
@@ -96,7 +121,10 @@ class Arithmetic(Expresion):
                     resultado.value = 0 - rightvalue.value
                     resultado.tipado = Type.F64
                 else:
-                    print("ERROR SEMANTICO EN OPERACION UNARIA")
+                    auxer = "ERROR SEMANTICO EN OPERACION UNARIA"
+                    print(auxer)
+                    TablaErrores.append(auxer)
+                    Prints.append(auxer)
             elif self.tipoOp == ArithmeticOption.POTENCIA:
                 dominantePotencia = self.DominantePotencia(leftvalue.tipado, rightvalue.tipado)
                 if dominantePotencia == Type.I64:
@@ -106,7 +134,10 @@ class Arithmetic(Expresion):
                     resultado.value = round(math.pow(leftvalue.value, rightvalue.value),2)
                     resultado.tipado == Type.F64
                 else:
-                    print("ERROR SEMANTICO EN OPERACION POTENCIA")
+                    auxer = "ERROR SEMANTICO EN OPERACION POTENCIA"
+                    print(auxer)
+                    TablaErrores.append(auxer)
+                    Prints.append(auxer)
             elif self.tipoOp == ArithmeticOption.RAIZ:
                 dominanteRaiz = self.DominanteRaiz(rightvalue.tipado)
                 if dominanteRaiz == Type.I64 or dominanteRaiz == Type.F64:
@@ -114,4 +145,7 @@ class Arithmetic(Expresion):
                     resultado.tipado = Type.F64
             return resultado
         except:
-            print("ERROR EN LA OPERACION ARITMETICA")
+            auxer = "ERROR EN LA OPERACION ARITMETICA"
+            print(auxer)
+            TablaErrores.append(auxer)
+            Prints.append(auxer)

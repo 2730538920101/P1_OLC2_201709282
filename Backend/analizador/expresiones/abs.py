@@ -1,5 +1,6 @@
 from ..abstract.expresiones import *
 from ..abstract.retorno import *
+from ..reportes.TablaSim import *
 
 class Abs(Expresion):
     def __init__(self, linea, columna, exp):
@@ -17,8 +18,17 @@ class Abs(Expresion):
                     aux.value = abs(int(val.value))
                     return aux                    
                 else:
-                    print("ERROR SEMANTICO, SOLO PUEDE OBTENER EL VALOR ABSOLUTO DE EXPRESIONES DE TIPO F64 O I64")
+                    auxer = "ERROR SEMANTICO, SOLO PUEDE OBTENER EL VALOR ABSOLUTO DE EXPRESIONES DE TIPO F64 O I64"
+                    print(auxer)
+                    TablaErrores.append(auxer)
+                    Prints.append(auxer)
             else:
-                print("ERROR SEMANTICO, LA EXPRESION NO ES VALIDA")
+                auxer = "ERROR SEMANTICO, LA EXPRESION NO ES VALIDA"
+                print(auxer)
+                TablaErrores.append(auxer)
+                Prints.append(auxer)
         except:
-            print("ERROR SEMANTICO, NO SE PUEDE OBTENER EL VALOR ABSOLUTO DE LA EXPRESION")
+            auxer = "ERROR SEMANTICO, NO SE PUEDE OBTENER EL VALOR ABSOLUTO DE LA EXPRESION"
+            print(auxer)
+            TablaErrores.append(auxer)
+            Prints.append(auxer)

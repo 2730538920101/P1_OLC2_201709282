@@ -11,10 +11,16 @@ class Statement(Instruccion):
         print("EJECUTANDO STATEMENT")
         env = Entorno(environment)
         for instr in self.code:
-            try:
-                element = instr.Ejecutar(env)
-                if element != None:
-                    return element
-            except:
-                print("ERROR DE SEMANTICO EN EL ENTORNO")
+            if instr != None:
+                if isinstance(instr, list):
+                    for x in instr:
+                        if x != None:
+                            el = x.Ejecutar(env)
+                            if isinstance(el, Retorno):
+                                return el
+                else:
+                    element = instr.Ejecutar(env)
+                    if isinstance(element, Retorno):
+                        return element
+        
 

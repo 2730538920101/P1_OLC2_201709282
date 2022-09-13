@@ -1,8 +1,6 @@
 import ply.lex as lex
 import ply.yacc as yacc
 
-
-
 from .abstract.expresiones import *
 from .abstract.instrucciones import *
 from .abstract.retorno import *
@@ -29,9 +27,8 @@ from .expresiones.capacity import *
 from .expresiones.contains import *
 from .expresiones.casting_str_string import *
 from .expresiones.range import *
-from .expresiones.tipo_param import *
 from .expresiones.parametros_declaracion import *
-from .expresiones.tipo_retorno import *
+from .expresiones.tipo_vector import *
 from .expresiones.parametro_llamada import *
 from .symbol.environment import *
 from .instrucciones.statement import *
@@ -47,8 +44,6 @@ from .instrucciones.loop import *
 from .instrucciones.match import *
 from .instrucciones.case import *
 from .instrucciones.for_inst import *
-from .instrucciones.array_assigment import *
-from .instrucciones.vector_assigment_new import *
 from .instrucciones.declaracion_struct import *
 from .instrucciones.declaracion_atributo import *
 from .instrucciones.access_assigment import *
@@ -58,6 +53,11 @@ from .instrucciones.insert import *
 from .instrucciones.remove import *
 from .instrucciones.funcion import *
 from .instrucciones.llamada_funcion import *
+from .instrucciones.print import *
+from .instrucciones.funcion_main import *
+from .reportes.TablaSim import *
+
+Contadormain = 0
 
 reservadas = {
     'String' : 'STRING',
@@ -193,7 +193,10 @@ def t_IDENTIFICADOR(t):
     try:
         t.type = reservadas.get(t.value, 'IDENTIFICADOR')
     except ValueError:
-        print("EL VALOR INGRESADO NO PUEDE SER UN IDENTIFICADOR")
+        auxer = "EL VALOR INGRESADO NO PUEDE SER UN IDENTIFICADOR"
+        print(auxer)
+        TablaErrores.append(auxer)
+        Prints.append(auxer)
         t.value='ERROR'
     return t
 
@@ -203,7 +206,10 @@ def t_CADENA(t):
     try:
         t.value = t.value[1:-1]
     except ValueError:
-        print("EL VALOR INGRESADO NO PUEDE SER UNA CADENA")
+        auxer = "EL VALOR INGRESADO NO PUEDE SER UNA CADENA"
+        print(auxer)
+        TablaErrores.append(auxer)
+        Prints.append(auxer)
         t.value='ERROR'
     return t
 
@@ -212,7 +218,10 @@ def t_DECIMAL(t):
     try:
         t.value = float(t.value)
     except ValueError:
-        print("Float muy grande %d", t.value)
+        auxer = "Float muy grande " + str(t.value)
+        print(auxer)
+        TablaErrores.append(auxer)
+        Prints.append(auxer)
         t.value = 0
     return t
 
@@ -221,7 +230,10 @@ def t_NUMERO(t):
     try:
         t.value = int(t.value)
     except ValueError:
-        print("Integer muy grande %d", t.value)
+        auxer = "Integer muy grande " +  str(t.value)
+        print(auxer)
+        TablaErrores.append(auxer)
+        Prints.append(auxer)
         t.value = 0
     return t
 
@@ -231,14 +243,20 @@ def t_CARACTER(t):
     try:
         t.value = t.value[1:-1]
     except ValueError:
-        print("EL VALOR INGRESADO NO PUEDE SER UN CARACTER")
+        auxer = "EL VALOR INGRESADO NO PUEDE SER UN CARACTER"
+        print(auxer)
+        TablaErrores.append(auxer)
+        Prints.append(auxer)
         t.value='ERROR'
     return t
 
 
 def t_error(t):
-     print("ERROR LEXICO '%s'" % t.value[0])
-     t.lexer.skip(1)
+    auxer = "ERROR LEXICO " + str(t.value[0])
+    print(auxer)
+    TablaErrores.append(auxer)
+    Prints.append(auxer)
+    t.lexer.skip(1)
 
 
 def t_newline(t):
@@ -287,21 +305,29 @@ def p_global_listado(p):
 
 def p_global(p):
     '''
-    global  : instruccion
+    global  : funcion_main
             | declaracion_struct
             | declaracion_funciones
+            | COMENTARIO
     '''
     p[0] = p[1]
 
+def p_funcion_main(p):
+    '''
+    funcion_main    : FN MAIN PARAP PARCL entorno
+    '''
+    p[0] = Funcion_main(p.lineno(1), p.lexpos(1), p[5])
+    
 def p_instruccion(p):
     '''
     instruccion : declaracion_variable
 		        | asignacion
-	            | expresiones
+                | expresiones
                 | asignacion_arr
-                | asignacion_struct
+                | COMENTARIO
     '''
     p[0] = p[1]
+
 
 def p_transferecia_1(p):
     '''
@@ -382,103 +408,73 @@ def p_generar_loop(p):
     '''
     p[0] = Loop(p.lineno(1), p.lexpos(1), p[2])
 
-def p_entorno_match_1(p):
+def p_entorno_match (p):
     '''
-    entorno_match   : LLAVEAP cases_list default_exp LLAVECL
-    '''
-    p[2].extend(p[3])
-    p[0] = p[2]
- 
-def p_entorno_match_2(p):
-    '''
-    entorno_match   : LLAVEAP cases_list LLAVECL
-    '''
-    p[0] = p[2]
-
-def p_entorno_match_3(p):
-    '''
-    entorno_match   : LLAVEAP default_exp LLAVECL
+    entorno_match   : LLAVEAP lista_cases LLAVECL
     '''
     p[0] = p[2]
 
 def p_generar_match(p):
     '''
     generar_match   : MATCH expresiones entorno_match
-    ''' 
+    '''
     p[0] = Match(p.lineno(1), p.lexpos(1), p[2], p[3])
 
-def p_cases_list_list_1(p):
+def p_lista_cases(p):
     '''
-    cases_list  : cases_list expresiones DOBFLECHA instruccion 
+    lista_cases : lista_cases lista_expresiones DOBFLECHA entorno
     '''
-    code = Statement(p.lineno(2), p.lexpos(2), [p[4]])
-    case1 = Case(p.lineno(2), p.lexpos(2), p[2], code)
-    p[1].append(case1)
+    c1 = Case(p.lineno(1), p.lexpos(1), p[2], p[4])
+    p[1].append(c1)
     p[0] = p[1]
 
-def p_cases_list_list_2(p):
+def p_lista_cases_2(p):
     '''
-    cases_list  : cases_list expresiones DOBFLECHA entorno
+    lista_cases : lista_cases lista_expresiones DOBFLECHA instruccion
     '''
-    case2 = Case(p.lineno(2), p.lexpos(2), p[2], p[4])
-    p[1].append(case2)
+    c2 = Case(p.lineno(1), p.lexpos(1), p[2], p[4])
+    p[1].append(c2)
     p[0] = p[1]
 
-def p_cases_list_list_3(p):
+def p_lista_cases_3(p):
     '''
-    cases_list  : cases_list expresiones DOBFLECHA instruccion COMA
+    lista_cases : lista_cases GBAJO DOBFLECHA entorno
     '''
-    code = Statement(p.lineno(2), p.lexpos(2), [p[4]])
-    case1 = Case(p.lineno(2), p.lexpos(2), p[2], code)
-    p[1].append(case1)
+    c3 = Case(p.lineno(1), p.lexpos(1), p[2], p[4])
+    p[1].append(c3)
     p[0] = p[1]
 
-def p_cases_list_1(p):
+def p_lista_cases_4(p):
     '''
-    cases_list  : expresiones DOBFLECHA entorno
+    lista_cases : lista_cases GBAJO DOBFLECHA instruccion 
     '''
-    case3 = Case(p.lineno(1), p.lexpos(1), p[1], p[3])
-    p[0] = [case3]
+    c1 = Case(p.lineno(1), p.lexpos(1), p[2], p[4])
+    p[1].append(c1)
+    p[0] = p[1]
 
-def p_cases_list_2(p):
+def p_lista_cases_5(p):
     '''
-    cases_list  : expresiones DOBFLECHA instruccion
+    lista_cases : lista_expresiones DOBFLECHA entorno
     '''
-    code2 = Statement(p.lineno(1), p.lexpos(1), [p[3]])
-    case4 = Case(p.lineno(1), p.lexpos(1), p[1], code2)
-    p[0] = [case4]
+    p[0] = [Case(p.lineno(1), p.lexpos(1), p[1], p[3])]
 
-def p_cases_list_3(p):
+def p_lista_cases_6(p):
     '''
-    cases_list  : expresiones DOBFLECHA instruccion COMA
+    lista_cases : lista_expresiones DOBFLECHA instruccion 
     '''
-    code2 = Statement(p.lineno(1), p.lexpos(1), [p[3]])
-    case4 = Case(p.lineno(1), p.lexpos(1), p[1], code2)
-    p[0] = [case4]
-    
+    p[0] = [Case(p.lineno(1), p.lexpos(1), p[1], p[3])]
 
-def p_default_exp_1(p):
+def p_lista_cases_7(p):
     '''
-    default_exp : GBAJO DOBFLECHA instruccion 
+    lista_cases : GBAJO DOBFLECHA entorno
     '''
-    code3 = Statement(p.lineno(1), p.lexpos(1), [p[3]])
-    case5 = Case(p.lineno(1), p.lexpos(1), None, code3)
-    p[0] = [case5]
+    p[0] = [Case(p.lineno(1), p.lexpos(1), p[1], p[3])]
 
-def p_default_exp_2(p):
+def p_lista_cases_8(p):
     '''
-    default_exp : GBAJO DOBFLECHA instruccion COMA 
+    lista_cases : GBAJO DOBFLECHA instruccion 
     '''
-    code3 = Statement(p.lineno(1), p.lexpos(1), [p[3]])
-    case5 = Case(p.lineno(1), p.lexpos(1), None, code3)
-    p[0] = [case5]
-
-def p_default_exp_3(p):
-    '''
-    default_exp : GBAJO DOBFLECHA entorno
-    '''
-    case6 = Case(p.lineno(1), p.lexpos(1), None, p[3])
-    p[0] = [case6]
+    p[0] = [Case(p.lineno(1), p.lexpos(1), p[1], p[3])]
 
 def p_entorno_1(p):
     '''
@@ -526,91 +522,65 @@ def p_lista_atributos_struct_2(p):
     '''
     p[0] = [Declaracion_atributo(p.lineno(1), p.lexpos(1), p[1], p[3])]
 
+##FUNCION
 def p_lista_parametros_1(p):
     '''
-    lista_parametros    : lista_parametros COMA IDENTIFICADOR DOSPUNTOS tipo_param
+    lista_parametros    : lista_parametros COMA IDENTIFICADOR DOSPUNTOS tipo_dato
     '''
-    atr = Parametros_declaracion(p.lineno(1), p.lexpos(1), p[3], p[5])
+    atr = Parametros_declaracion(p.lineno(1), p.lexpos(1), p[3], p[5], False)
     p[1].append(atr)
     p[0] = p[1]
 
+##FUNCION
 def p_lista_parametros_2(p):
     '''
-    lista_parametros    :   IDENTIFICADOR DOSPUNTOS tipo_param
+    lista_parametros    :   IDENTIFICADOR DOSPUNTOS tipo_dato
     '''
-    p[0] = [Parametros_declaracion(p.lineno(1), p.lexpos(1), p[1], p[3])]
+    p[0] = [Parametros_declaracion(p.lineno(1), p.lexpos(1), p[1], p[3], False)]
 
-def p_tipo_param_1(p):
+##FUNCION
+def p_lista_parametros_3(p):
     '''
-    tipo_param  : CONCAT MUT CORCHETEAP tipo_dato CORCHETECL
+    lista_parametros    : lista_parametros COMA IDENTIFICADOR DOSPUNTOS CONCAT MUT tipo_dato
     '''
-    p[0] = Tipo_param(p.lineno(1), p.lexpos(1), p[1], True, False, False, False)
+    atr = Parametros_declaracion(p.lineno(1), p.lexpos(1), p[3], p[7], True)
+    p[1].append(atr)
+    p[0] = p[1]
 
-def p_tipo_param_2(p):
+##FUNCION
+def p_lista_parametros_4(p):
     '''
-    tipo_param  : CONCAT MUT tipo_array
+    lista_parametros    :   IDENTIFICADOR DOSPUNTOS CONCAT MUT tipo_dato
     '''
-    p[0] = Tipo_param(p.lineno(1), p.lexpos(1), p[3], False, True, False, False)
-
-def p_tipo_param_3(p):
-    '''
-    tipo_param  : CONCAT MUT VECMAY MENOR tipo_dato MAYOR
-    '''
-    p[0] = Tipo_param(p.lineno(1), p.lexpos(1), p[5], False, False, True, False)
-
-def p_tipo_param_4(p):
-    '''
-    tipo_param  : tipo_dato
-    '''
-    p[0] = Tipo_param(p.lineno(1), p.lexpos(1), p[1], False, False, False, False)
-
-def p_tipo_retorno_1(p):
-    '''
-    tipo_retorno    : tipo_dato
-    '''
-    p[0] = Tipo_retorno(p.lineno(1), p.lexpos(1), p[1], False, False, False, False)
-
-def p_tipo_retorno_2(p):
-    '''
-    tipo_retorno    : CORCHETEAP tipo_dato CORCHETECL
-    '''
-    p[0] = Tipo_retorno(p.lineno(1), p.lexpos(1), p[1], True, False, False, False)
+    p[0] = [Parametros_declaracion(p.lineno(1), p.lexpos(1), p[1], p[5], True)]
 
 
-def p_tipo_retorno_3(p):
-    '''
-    tipo_retorno    : tipo_array
-    '''
-    p[0] = Tipo_retorno(p.lineno(1), p.lexpos(1), p[1], False, True, False, False)
-
-def p_tipo_retorno_4(p):
-    '''
-    tipo_retorno    : VECMAY MENOR tipo_dato MAYOR 
-    '''
-    p[0] = Tipo_retorno(p.lineno(1), p.lexpos(1), p[1], False, False, True, False)
-
+##FUNCION
 def p_declaracion_funciones_1(p):
     '''
     declaracion_funciones   : FN IDENTIFICADOR PARAP lista_parametros PARCL entorno
     '''
     p[0] = Funcion(p.lineno(1), p.lexpos(1), p[2], Type.NULL, p[6], p[4], False)
 
+##FUNCION
 def p_declaracion_funciones_2(p):
     '''
-    declaracion_funciones   : FN IDENTIFICADOR PARAP lista_parametros PARCL FLECHA tipo_retorno entorno
+    declaracion_funciones   : FN IDENTIFICADOR PARAP lista_parametros PARCL FLECHA tipo_dato entorno
     '''
     p[0] = Funcion(p.lineno(1), p.lexpos(1), p[2], p[7], p[8], p[4], False)
 
 
+##FUNCION
 def p_declaracion_funciones_3(p):
     '''
     declaracion_funciones   : PUB FN IDENTIFICADOR PARAP lista_parametros PARCL entorno
     '''
     p[0] = Funcion(p.lineno(1), p.lexpos(1), p[3], Type.NULL, p[7], p[5], True)
 
+##FUNCION
 def p_declaracion_funciones_4(p):
     '''
-    declaracion_funciones   : PUB FN IDENTIFICADOR PARAP lista_parametros PARCL FLECHA tipo_retorno entorno
+    declaracion_funciones   : PUB FN IDENTIFICADOR PARAP lista_parametros PARCL FLECHA tipo_dato entorno
     '''
     p[0] = Funcion(p.lineno(1), p.lexpos(1), p[3], p[8], p[9], p[5], True)
 
@@ -649,7 +619,12 @@ def p_asignacion_1(p):
         p[0] = Assigment(p.lineno(1), p.lexpos(1), p[1], p[5], Type.STRUCT)
     elif p[3] == Type.USIZE:
         p[0] = Assigment(p.lineno(1), p.lexpos(1), p[1], p[5], Type.USIZE)
+    elif isinstance(p[3], Array_type):
+        p[0] = Assigment(p.lineno(1), p.lexpos(1), p[1], p[5], p[3])
+    elif isinstance(p[3], Tipo_vector):
+        p[0] = Assigment(p.lineno(1), p.lexpos(1), p[1], p[5], p[3])
 
+    
 
 def p_asignacion_2(p):
     '''
@@ -657,42 +632,16 @@ def p_asignacion_2(p):
     '''
     p[0] = Assigment(p.lineno(1), p.lexpos(1), p[1], p[3], Type.NULL)
 
-def p_asignacion_3(p):
-    '''
-    asignacion  : IDENTIFICADOR DOSPUNTOS tipo_array IGUAL expresiones
-    '''
-    p[0] = Array_assigment(p.lineno(1), p.lexpos(1),p[1], p[5], p[3])
 
-def p_asignacion_4(p):
-    '''
-    asignacion  : IDENTIFICADOR DOSPUNTOS VECMAY MENOR tipo_dato MAYOR IGUAL expresiones 
-    '''
-    p[0] = Vector_assigment_new(p.lineno(1), p.lexpos(1), p[1], p[5], p[8])
 
+##ARRAY
 def p_asignacion_arr(p):
     '''
     asignacion_arr  : IDENTIFICADOR lista_indices IGUAL expresiones
     '''
     p[0] = Access_assigment(p.lineno(1), p.lexpos(1), p[1], p[2],p[4])
 
-def p_asignacion_struct(p):
-    '''
-    asignacion_struct   : IDENTIFICADOR PUNTO IDENTIFICADOR IGUAL expresiones
-    '''
-    p[0] = Struct_assigment(p.lineno(1), p.lexpos(1), p[1], p[3], p[5])
 
-def p_tipo_array(p):
-    '''
-    tipo_array  : CORCHETEAP tipo_dato PCOMA NUMERO CORCHETECL
-    '''
-    p[0] = Array_type(p.lineno(1), p.lexpos(1), p[2], [p[4]])
-
-def p_tipo_array_2(p):
-    '''
-    tipo_array  : CORCHETEAP tipo_array PCOMA NUMERO CORCHETECL
-    '''
-    p[2].index.append(p[4])
-    p[0] = p[2]
 
 def p_expresiones(p):
     '''
@@ -706,7 +655,7 @@ def p_expresiones(p):
                 | expresiones PCOMA
                 | funciones_vectores
                 | llamada_funcion
-               
+                | print               
     '''
     p[0] = p[1]
 
@@ -719,45 +668,52 @@ def p_expresiones_2(p):
 
 def p_expresiones_3(p):
     '''
-    expresiones : IDENTIFICADOR
+    expresiones :   IDENTIFICADOR
     '''
     p[0] = Access(p.lineno(1), p.lexpos(1), p[1])
 
+##ARRAY
 def p_expresiones_4(p):
     '''
     expresiones : CORCHETEAP expresiones PCOMA expresiones CORCHETECL
     '''
     p[0] = Array_index(p.lineno(1), p.lexpos(1), p[2], p[4])
 
+##ARRAY
 def p_expresiones_5(p):
     '''
     expresiones : CORCHETEAP lista_expresiones CORCHETECL
     '''
     p[0] = Array_complete(p.lineno(1), p.lexpos(1), p[2], Type.ARRAY)
 
+##VECTOR
 def p_expresiones_6(p):
     '''
     expresiones : VECMIN NOT CORCHETEAP expresiones PCOMA expresiones CORCHETECL
     '''
     p[0] = Vector_index(p.lineno(1), p.lexpos(1), p[4], p[6])
 
+##VECTOR
 def p_expresiones_7(p):
     '''
     expresiones : VECMIN NOT CORCHETEAP lista_expresiones CORCHETECL
     '''
-    p[0] = Vector_complete(p.lineno(1), p.lexpos(1), p[4], Type.VECTOR)
+    p[0] = Vector_complete(p.lineno(1), p.lexpos(1), p[4], Type.VECTOR, None)
 
+##VECTOR
 def p_expresiones_8(p):
     '''
     expresiones : VECMAY DOSPUNTOS DOSPUNTOS NEW PARAP PARCL
     '''
-    p[0] = None
+    p[0] = Vector_complete(p.lineno(1), p.lexpos(1), None, Type.VECTOR, None)
 
+##VECTOR
 def p_expresiones_9(p):
     '''
     expresiones : VECMAY DOSPUNTOS DOSPUNTOS WITH_CAPACITY PARAP expresiones PARCL
     '''
-    p[0] = p[6]
+    p[0] = Vector_complete(p.lineno(1), p.lexpos(1), None, Type.VECTOR, p[6])
+
 
 def p_expresiones_10(p):
     '''
@@ -765,24 +721,23 @@ def p_expresiones_10(p):
     '''
     p[0] = Generar_struct(p.lineno(1), p.lexpos(1), p[1], p[3], Type.STRUCT)
 
+##ARRAY Y VECTOR
 def p_expresiones_11(p):
     '''
     expresiones : IDENTIFICADOR lista_indices
     '''
     p[0] = Access_index(p.lineno(1), p.lexpos(1), p[1], p[2])
 
-def p_expresiones_12(p):
-    '''
-    expresiones : IDENTIFICADOR PUNTO IDENTIFICADOR
-    '''
-    p[0] = Struct_access(p.lineno(1), p.lexpos(1), p[1], p[3])
 
-def p_expresiones_13(p):
+
+def p_expresiones_12(p):
     '''
     expresiones : expresiones PUNTO PUNTO expresiones
     '''
     p[0] = Range(p.lineno(1), p.lexpos(1), p[1], p[4])
 
+
+##ARRAY Y VECTOR
 def p_lista_indices_1(p):
     '''
     lista_indices   :   lista_indices CORCHETEAP expresiones CORCHETECL
@@ -790,6 +745,7 @@ def p_lista_indices_1(p):
     p[1].append(p[3])
     p[0] = p[1]
 
+##ARRAY Y VECTOR
 def p_lista_indices_2(p):
     '''
     lista_indices   : CORCHETEAP expresiones CORCHETECL
@@ -813,6 +769,8 @@ def p_lista_atributos_2(p):
 def p_lista_exp_1(p):
     '''
     lista_expresiones   : lista_expresiones COMA expresiones
+                        | lista_expresiones BARRA expresiones
+
     '''
     p[1].append(p[3])
     p[0] = p[1]
@@ -822,6 +780,7 @@ def p_lista_exp_2(p):
     lista_expresiones   : expresiones
     '''
     p[0] = [p[1]]
+
 
 
 def p_expresiones_aritmeticas_1(p):
@@ -860,17 +819,16 @@ def p_expresiones_aritmeticas_4(p):
     '''
     expresiones_aritmeticas : expresiones PUNTO SQRT PARAP PARCL 
     '''
-    p[0] = Arithmetic(p.lineno(1), p.lexpos(1), None, p[1], ArithmeticOption.RAIZ)
+    p[0] = Arithmetic(p.lineno(1), p.lexpos(1), None, p[1], ArithmeticOption.RAIZ)  
 
 def p_expresiones_logicas_1(p):
     '''
     expresiones_logicas : expresiones AND expresiones
                         | expresiones OR expresiones
-                        | expresiones BARRA expresiones
     '''
     if p[2] == "&&":
         p[0] = Logic(p.lineno(1), p.lexpos(1), p[1], p[3], LogicOption.AND)
-    elif p[2] == "|" or p[2] == "||":
+    elif p[2] == "||":
         p[0] =  Logic(p.lineno(1), p.lexpos(1), p[1], p[3], LogicOption.OR)
 
 def p_expresiones_logicas_2(p):
@@ -932,42 +890,48 @@ def p_especiales_5(p):
     '''
     p[0] = Chars(p.lineno(1), p.lexpos(1), p[1])
 
-
+##VECTOR
 def p_funciones_vectores_1(p):
     '''
-    funciones_vectores  : IDENTIFICADOR PUNTO PUSH PARAP expresiones PARCL
+    funciones_vectores  : expresiones PUNTO PUSH PARAP expresiones PARCL
     '''
     p[0] = Push(p.lineno(1), p.lexpos(1), p[1], p[5])
 
+##VECTOR
 def p_funciones_vectores_2(p):
     '''
-    funciones_vectores  : IDENTIFICADOR PUNTO REMOVE PARAP expresiones PARCL
+    funciones_vectores  : expresiones PUNTO REMOVE PARAP expresiones PARCL
     '''
     p[0] = Remove(p.lineno(1), p.lexpos(1), p[1], p[5])
 
+##VECTOR
 def p_funciones_vectores_3(p):
     '''
-    funciones_vectores  : IDENTIFICADOR PUNTO INSERT PARAP expresiones COMA expresiones PARCL
+    funciones_vectores  : expresiones PUNTO INSERT PARAP expresiones COMA expresiones PARCL
     '''
     p[0] = Insert(p.lineno(1), p.lexpos(1), p[1], p[7], p[5])
 
+##VECTOR
 def p_funciones_vectores_4(p):
     '''
-    funciones_vectores  : IDENTIFICADOR PUNTO LEN PARAP PARCL
+    funciones_vectores  : expresiones PUNTO LEN PARAP PARCL
     '''
     p[0] = Len(p.lineno(1), p.lexpos(1), p[1])
 
+##VECTOR
 def p_funciones_vectores_5(p):
     '''
-    funciones_vectores  : IDENTIFICADOR PUNTO CAPACITY PARAP PARCL
+    funciones_vectores  : expresiones PUNTO CAPACITY PARAP PARCL
     '''
     p[0] = Capacity(p.lineno(1), p.lexpos(1), p[1])
 
+##VECTOR
 def p_funciones_vectores_6(p):
     '''
-    funciones_vectores  : IDENTIFICADOR PUNTO CONTAINS PARAP CONCAT expresiones PARCL
+    funciones_vectores  : expresiones PUNTO CONTAINS PARAP CONCAT expresiones PARCL
     '''
     p[0] = Contains(p.lineno(1), p.lexpos(1), p[1], p[6])
+
 
 def p_valores_1(p):
     '''
@@ -1006,12 +970,20 @@ def p_valores_5(p):
         p[0] = Literal(p.lineno(1), p.lexpos(1), False, Type.BOOL)
 
 
+##FUNCION
 def p_llamada_funcion(p):
     '''
     llamada_funcion :   IDENTIFICADOR PARAP lista_parametros_llamada PARCL
     '''
     p[0] = Llamada_funcion(p.lineno(1), p.lexpos(1), p[1], p[3])
 
+def p_llamada_funcion_2(p):
+    '''
+    llamada_funcion :   IDENTIFICADOR PARAP  PARCL
+    '''
+    p[0] = Llamada_funcion(p.lineno(1), p.lexpos(1), p[1], None)
+
+##FUNCION
 def p_lista_parametros_llamada_1(p):
     '''
     lista_parametros_llamada    : lista_parametros_llamada COMA parametro_llamada
@@ -1019,25 +991,34 @@ def p_lista_parametros_llamada_1(p):
     p[1].append(p[3])
     p[0] = p[1]
 
+##FUNCION
 def p_lista_parametros_llamada_2(p):
     '''
     lista_parametros_llamada    : parametro_llamada
     '''
     p[0] = [p[1]]
 
+##FUNCION
 def p_parametro_llamada_1(p):
     '''
     parametro_llamada   : CONCAT MUT expresiones
     '''
     p[0] = Parametro_llamada(p.lineno(1), p.lexpos(1), p[3], True)
 
+##FUNCION
 def p_parametro_llamada_2(p):
     '''
     parametro_llamada   : expresiones
     '''
     p[0] = Parametro_llamada(p.lineno(1), p.lexpos(1), p[1], False)
 
-def p_tipo_dato(p):
+def p_print(p):
+    '''
+    print   : PRINTLN NOT PARAP lista_expresiones PARCL
+    '''
+    p[0] = Println(p.lineno(1), p.lexpos(1), p[4])
+
+def p_tipo_dato_1(p):
     '''
     tipo_dato   : I64
                 | F64
@@ -1067,8 +1048,50 @@ def p_tipo_dato(p):
         p[0] = Type.STRUCT
     else:
         p[0] = p[1]
+
+def p_tipo_dato_2(p):
+    '''
+    tipo_dato   : tipo_array
+    '''
+    p[0] = p[1]
+
+def p_tipo_dato_3(p):
+    '''
+    tipo_dato   : tipo_vector
+    '''
+    p[0] = p[1]
+
+def p_tipo_dato_4(p):
+    '''
+    tipo_dato   : CORCHETEAP tipo_dato CORCHETECL
+    ''' 
+    cero = Literal(p.lineno(1), p.lexpos(1), 0, Type.I64)
+    p[0] = Array_type(p.lineno(1), p.lexpos(1), Type.ARRAY, p[2], [cero])
+
+##ARRAY
+def p_tipo_array(p):
+    '''
+    tipo_array  : CORCHETEAP tipo_dato PCOMA NUMERO CORCHETECL
+    '''
+    p[0] = Array_type(p.lineno(1), p.lexpos(1), Type.ARRAY, p[2], [p[4]])
+
+##ARRAY
+def p_tipo_array_2(p):
+    '''
+    tipo_array  : CORCHETEAP tipo_array PCOMA NUMERO CORCHETECL
+    '''
+    p[2].index.append(p[4])
+    p[0] = p[2]
+
+def p_tipo_vector_1(p):
+    '''
+    tipo_vector : VECMAY MENOR tipo_dato MAYOR
+    '''
+    p[0] = Tipo_vector(p.lineno(1), p.lexpos(1), p[3], Type.VECTOR)
     
 def p_error(p):
-    print("ERROR SINTACTICO EN EL TOKEN: ", p.type, "EN LA LINEA: ", p.lexer.lineno, "EN LA COLUMNA: ", p.lexpos)
-          
+    auxer = "ERROR SINTACTICO EN EL TOKEN: " + str(p.type) + "EN LA LINEA: " + str(p.lexer.lineno) + "EN LA COLUMNA: " + str(p.lexpos)
+    print(auxer)
+    TablaErrores.append(auxer)
+    Prints.append(auxer)      
 parser = yacc.yacc()

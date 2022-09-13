@@ -2,6 +2,11 @@ from ..abstract.expresiones import *
 from ..abstract.retorno import *
 from ..symbol.array import *
 from ..symbol.vector import *
+from ..expresiones.access import *
+from ..expresiones.literal import *
+from ..expresiones.arithmetic import *
+from ..reportes.TablaSim import TablaErrores
+from ..reportes.TablaSim import Prints
 
 class Access_index(Expresion):
     def __init__(self, linea, columna, id, indices):
@@ -11,6 +16,7 @@ class Access_index(Expresion):
 
     def Ejecutar(self, environment):
         print("EJECUTANDO ACCESS INDEX")
+        
         try:
             val = environment.getVariable(self.id)
             if val != None:
@@ -18,20 +24,56 @@ class Access_index(Expresion):
                     aux = Retorno()
                     auxv = val.valor
                     for x in range(len(self.indices)):
-                        if self.indices[x].tipado == Type.I64:
-                            if x == 0:
-                                auxv = auxv[self.indices[x].valor]
-                            else:
-                                auxv = auxv.value.values[self.indices[x].valor]
+                        if isinstance(self.indices[x], Access) or isinstance(self.indices[x], Arithmetic):
+                            ind = self.indices[x].Ejecutar(environment)
                         else:
-                            print("ERROR SEMANTICO, LOS INDICES DEBEN SER UN VALOR ENTERO")
+                            ind = self.indices[x]
+                        if ind.tipado == Type.I64 or ind.tipado == Type.USIZE:
+                            if x == 0:
+                                if isinstance(ind, Literal):
+                                    if isinstance(auxv, Arreglo) or isinstance(auxv, Vector):
+                                        auxv = auxv.values[ind.valor]
+                                    else:
+                                        auxv = auxv[ind.valor]
+                                else:
+                                    if isinstance(auxv, Arreglo) or isinstance(auxv, Vector):
+                                        auxv = auxv.values[ind.value]
+                                    else:
+                                        auxv = auxv[ind.value]
+                                    
+                            else:
+                                if isinstance(ind, Literal):
+                                    if isinstance(auxv, Arreglo) or isinstance(auxv, Vector):
+                                        auxv = auxv.values[ind.valor]
+                                    else:
+                                        auxv = auxv.value.values[ind.valor]
+                                else:
+                                    if isinstance(auxv, Arreglo) or isinstance(auxv, Vector):
+                                        auxv = auxv.values[ind.value]
+                                    else:
+                                        auxv = auxv.value.values[ind.value]
+                        else:
+                            auxer = "ERROR SEMANTICO, LOS INDICES DEBEN SER UN VALOR ENTERO"
+                            print(auxer)
+                            TablaErrores.append(auxer)
+                            Prints.append(auxer)
                     aux.tipado = auxv.tipado
                     aux.value = auxv.value
                     return aux
                 else:
-                    print("ERROR SEMANTICO, SOLO SE PUEDE ACCEDER A EXPRESONES ITERABLES ARRAY O VECTOR")
+                    auxer = "ERROR SEMANTICO, SOLO SE PUEDE ACCEDER A EXPRESONES ITERABLES ARRAY O VECTOR"
+                    print(auxer)
+                    TablaErrores.append(auxer)
+                    Prints.append(auxer)
             else:
-                print("ERROR SEMANTICO, LA VARIABLE NO HA SIDO DECLARADA")
+                auxer = "ERROR SEMANTICO, LA VARIABLE NO HA SIDO DECLARADA"
+                print(auxer)
+                TablaErrores.append(auxer)
+                Prints.append(auxer)
         except:
-            print("ERROR SEMANTICO, ELEMENTO ACCEDIDO INVALIDO")
-  
+            auxer = "ERROR SEMANTICO, ELEMENTO ACCEDIDO INVALIDO"
+            print(auxer)
+            TablaErrores.append(auxer)
+            Prints.append(auxer)
+
+            

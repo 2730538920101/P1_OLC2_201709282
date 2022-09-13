@@ -1,5 +1,7 @@
 from ..abstract.expresiones import *
 from ..abstract.retorno import *
+from ..expresiones.access import *
+from ..reportes.TablaSim import *
 
 class Contains(Expresion):
     def __init__(self, linea, columna, id, exp):
@@ -10,6 +12,8 @@ class Contains(Expresion):
     def Ejecutar(self, environment):
         print("EJECUTANDO CONTAINS AL VECTOR")
         try:
+            if isinstance(self.id, Access):
+                self.id = self.id.id
             var = environment.getVariable(self.id)
             if var != None:
                 if var.tipado == Type.VECTOR:
@@ -25,8 +29,19 @@ class Contains(Expresion):
                             aux.value = False
                     return aux
                 else:
-                    print("ERROR SEMANTICO, LA VARIABLE NO ES UN VECTOR")
+                    auxer = "ERROR SEMANTICO, LA VARIABLE NO ES UN VECTOR"
+                    print(auxer)
+                    TablaErrores.append(auxer)
+                    Prints.append(auxer)
             else:
-                print("ERROR SEMANTICO, LA VARIABLE NO HA SIDO DECLARADA")
+                auxer = "ERROR SEMANTICO, LA VARIABLE NO HA SIDO DECLARADA"
+                print(auxer)
+                TablaErrores.append(auxer)
+                Prints.append(auxer)
         except:
-            print("ERROR SEMANTICO, ERROR AL BUSCAR EN EL VECTOR LA EXPRESION")
+            auxer = "ERROR SEMANTICO, ERROR AL BUSCAR EN EL VECTOR LA EXPRESION"
+            print(auxer)
+            TablaErrores.append(auxer)
+            Prints.append(auxer)
+
+            

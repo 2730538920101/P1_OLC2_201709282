@@ -13,18 +13,16 @@ class Array_index(Expresion):
 
     def Ejecutar(self, environment):
         print("EJECUTANDO INDEX ARRAY")
+        
         aux = Arreglo()
         aux2 = Retorno()
         index = self.exp2.Ejecutar(environment)
-        if index.tipado != Type.I64:
-            print("ERROR SEMANTICO, EL INDICE NO ES UN VALOR NUMERICO")
-        else:
-            auxval = self.exp1.Ejecutar(environment)
-            for val in range(index.value):
-                aux.values.append(copy(auxval))
-            aux.tipado = auxval.tipado
-            aux2.value = aux
-            aux2.tipado = Type.ARRAY
+        auxval = self.exp1.Ejecutar(environment)
+        for val in range(index.value):
+            aux.values.append(copy(auxval))
+        aux.tipado = auxval.tipado
+        aux2.value = aux
+        aux2.tipado = Type.ARRAY
         return aux2
                 
                 

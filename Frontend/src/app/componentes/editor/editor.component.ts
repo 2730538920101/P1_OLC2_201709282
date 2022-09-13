@@ -19,7 +19,9 @@ interface Ventana{
   styleUrls: ['./editor.component.css']
 })
 export class EditorComponent implements OnInit {
-
+  TabSimbolos = [];
+  TabErrores = [];
+  PrintsArr = []; 
   tabs:Ventana[]=[];
   contador:number=0;
 
@@ -126,7 +128,7 @@ export class EditorComponent implements OnInit {
 
   GuardarArchivo(index:any){
     try {
-      let nombre = this.tabs[index].nombre + ".txt";
+      let nombre = this.tabs[index].nombre + ".rs";
       let content = this.tabs[index].code;
       let type = "text/plain";
       if(this.tabs[index].code != ""){
@@ -153,19 +155,30 @@ export class EditorComponent implements OnInit {
   Compilar(index:any){
     this.servicio.post('http://localhost:3000/analizar' ,this.tabs[index]).subscribe(result => {
       this.console = this.console + result.message + "\n"
+      this.PrintsArr = result.prints; 
+      this.TabErrores = result.errores; 
+      this.TabSimbolos = result.simbolos;
+      console.log(this.PrintsArr);
+      console.log(this.TabErrores);
+      console.log(this.TabSimbolos);
+      this.PrintsArr.forEach(element => {
+        this.console = this.console + element + "\n"
+      });
     });
+
   }
 
   Limpiar(){
     this.console = ""
   }
  
-  /*
+  
   GenerarErrores(){
-    this.servicio.setErrores(this.tablaError);
-    this._router.navigate(['errors']);
+    this.servicio.setErrores(this.TabErrores);
+    this._router.navigate(['errores']);
   }
 
+  /*
   GenerarTabla(){
     this.servicio.setSimbolos(this.tablaSimbolos);
     this._router.navigate(['symbols']);

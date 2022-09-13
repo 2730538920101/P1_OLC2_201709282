@@ -1,5 +1,6 @@
 from ..abstract.instrucciones import *
 from ..symbol.struct import *
+from ..reportes.TablaSim import *
 
 class Declaracion_struct(Instruccion):
     def __init__(self, linea, columna, id, code, tipado):
@@ -18,4 +19,7 @@ class Declaracion_struct(Instruccion):
                 aux.tipados.append(inst.tipado)
             environment.guardarStructs(self.id, aux, self.tipado, True)
         else:
-            print("ERROR SEMANTICO, YA SE HA DECLARADO UN STRUCT CON EL MISMO NOMBRE")
+            auxer = "ERROR SEMANTICO, YA SE HA DECLARADO UN STRUCT CON EL MISMO NOMBRE"
+            print(auxer)
+            TablaErrores.append(auxer)
+            Prints.append(auxer)

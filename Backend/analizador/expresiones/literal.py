@@ -19,11 +19,11 @@ class Literal(Expresion):
             aux.__init__(str(self.valor), Type.CHAR)
         elif self.tipado.value[0] == 4:
             aux.__init__(str(self.valor), Type.STR)
-        elif self.tipado.value[0] == 5:
-            aux.__init__(self.valor, Type.BOOL) 
         elif self.tipado.value[0] == 6:
-            aux.__init__(self.valor, Type.USIZE)
+            aux.__init__(int(self.valor), Type.USIZE) 
         elif self.tipado.value[0] == 7:
+            aux.__init__(self.valor, Type.BOOL) 
+        elif self.tipado.value[0] == 8:
             aux.__init__(self.valor, Type.STRUCT)
         else:
             aux.__init__(self.valor, Type.NULL)        

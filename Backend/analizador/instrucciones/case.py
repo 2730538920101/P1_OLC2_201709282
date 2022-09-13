@@ -8,12 +8,6 @@ class Case(Instruccion):
         self.code = code
     
     def Ejecutar(self, environment):
-        element = self.code.Ejecutar(environment)
-        if element != None:
-            return element
-
-    def getExp(self):
-        return self.exp
-
-    
+        print("EJECUTANDO CASE")    
+        return self
     

@@ -1,6 +1,8 @@
-from ..expresiones.tipo_param import *
 from ..abstract.instrucciones import *
-from ..expresiones.tipo_retorno import *
+from ..expresiones.access import *
+from ..expresiones.tipo_vector import *
+from ..expresiones.array_type import *
+from ..reportes.TablaSim import *
 
 class Funcion(Instruccion):
     def __init__(self, linea, columna, id, tipado, statement, parametros, mutabilidad):
@@ -14,13 +16,25 @@ class Funcion(Instruccion):
 
     def Ejecutar(self, environment):
         print("EJECUTANDO FUNCION")
-        if isinstance(self.tipado, Tipo_retorno):
-            self.tipado.Ejecutar(environment)
-        else:
-            var = environment.getVariable(self.tipado)
-            if var != None:
-                if var.tipado == Type.STRUCT:
-                    self.tipado = Type.STRUCT
-            for par in self.parametros:
-                par.Ejecutar(environment)
+        if isinstance(self.tipado, Access):
+            tip = self.tipado.Ejecutar(environment)
+            if tip != None:
+                self.tipado == Type.STRUCT
+            else:
+                auxer = "ERROR SEMANTICO, EL STRUCT DEL TIPO DE RETORNO DE LA FUNCION NO HA SIDO DECLARADO"
+                print(auxer)
+                TablaErrores.append(auxer)
+                Prints.append(auxer)
+        elif isinstance(self.tipado, Tipo_vector) or isinstance(self.tipado, Array_type):
+            tip = self.tipado.Ejecutar(environment)
+            self.tipado == tip.tipado
+        auxpar = []
+        for p in self.parametros:
+            p = p.Ejecutar(environment)
+            if p != None:
+                auxpar.append(p)
+            else:
+                auxpar = None
+                break
+        self.parametros = auxpar
         environment.guardarFunciones(self.id, self, self.mutabilidad)

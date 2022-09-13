@@ -3,6 +3,7 @@ from ..abstract.instrucciones import *
 from ..abstract.retorno import *
 from ..symbol.array import * 
 from ..symbol.vector import *
+from ..reportes.TablaSim import *
 
 class Access_assigment(Instruccion):
     def __init__(self, linea, columna, id, indices, exp):
@@ -20,23 +21,35 @@ class Access_assigment(Instruccion):
                 if val.mutabilidad == True:
                     auxval = val.valor
                     for x in range(len(self.indices)):
-                        if self.indices[x].tipado == Type.I64:
+                        tip = self.indices[x].Ejecutar(environment)
+                        if tip.tipado == Type.I64 or tip.tipado == Type.USIZE:
                             if len(self.indices) == 1:
-                                auxval[self.indices[x].valor] = expaux
+                                auxval.values[tip.value] = expaux
                             else:
-                                auxval = auxval[self.indices[x].valor]
-                                if auxval.tipado == Type.ARRAY or auxval.tipado == Type.VECTOR:
-                                    auxval = auxval.value.values
+                                if x <= len(self.indices)-2:
+                                    auxval = auxval.values[tip.value].value
                                 else:
-                                    auxval.value = expaux.value
+                                    auxval.values[tip.value] = expaux
                         else:
-                            print("ERROR SEMANTICO, EL INDICE DEBE SER DE TIPO I64")
+                            auxer = "ERROR SEMANTICO, EL INDICE DEBE SER DE TIPO I64"
+                            print(auxer)
+                            TablaErrores.append(auxer)
+                            Prints.append(auxer)
                 else:
-                    print("ERROR SEMANTICO, EL ARREGLO O VECTOR NO ES MUTABLE")
+                    auxer = "ERROR SEMANTICO, EL ARREGLO O VECTOR NO ES MUTABLE"
+                    print(auxer)
+                    TablaErrores.append(auxer)
+                    Prints.append(auxer)
             else:
-                print("ERROR SEMANTICO, EL ARREGLO O VECTOR NO ES VALIDO")
+                auxer = "ERROR SEMANTICO, EL ARREGLO O VECTOR NO ES VALIDO"
+                print(auxer)
+                TablaErrores.append(auxer)
+                Prints.append(auxer)
         except:
-            print("ERROR SEMANTICO, NO SE PUEDE ASIGNAR UN VALOR AL ARREGLO O VECTOR")
+            auxer = "ERROR SEMANTICO, NO SE PUEDE ASIGNAR UN VALOR AL ARREGLO O VECTOR"
+            print(auxer)
+            TablaErrores.append(auxer)
+            Prints.append(auxer)
 
 
    

@@ -19,9 +19,11 @@ class If(Instruccion):
                 element = self.expif.Ejecutar(environment)
                 if element != None:
                     if element.tipado == Type.BREAK:
-                        return element
+                        return 
                     elif element.tipado == Type.CONTINUE:
-                        pass
+                        return element 
+                    elif element.tipado == Type.RETURN:
+                        return element
                     else:
                         return element
             elif cond.value == False:
@@ -29,9 +31,11 @@ class If(Instruccion):
                     elemento = self.expel.Ejecutar(environment)
                     if elemento != None:
                         if elemento.tipado == Type.BREAK:
-                            return elemento
+                            return
                         elif elemento.tipado == Type.CONTINUE:
-                            pass
+                            return elemento
+                        elif elemento.tipado == Type.RETURN:
+                            return elemento
                         else:
                             return elemento
                     

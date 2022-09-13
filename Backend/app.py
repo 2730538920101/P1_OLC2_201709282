@@ -1,9 +1,12 @@
+import json
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from analizador.abstract.retorno import *
 import analizador.gramatica
 from  analizador.symbol.environment import Entorno
-from analizador.symbol.array import * 
+from analizador.symbol.array import *
+from analizador.reportes.TablaSim import *
+
 
 
 
@@ -13,13 +16,15 @@ CORS(app)
 
 
 
-
 @app.route('/ping')
 def ping():
     return jsonify({'message':'PONG'})
 
 @app.route('/analizar', methods=['POST'])
 def Analizar():
+    TablaErrores.clear()
+    TablaSimbolos.clear()
+    Prints.clear()
     aux = request.json
     entrada = aux['code']
     #analizador.gramatica.lexer.input(entrada) 
@@ -39,6 +44,17 @@ def Analizar():
     #        break      # No more input
     #    print(tok)   
     print("SATISFACTORY ANALYSIS")
-    return jsonify({"message":"SATISFACTORY ANALYSIS"})
+    simdic = {}
+    cont = 0
+    for sim in TablaSimbolos:
+        auxd = {}
+        auxd['id'] = sim.id
+        auxd['valor'] = sim.valor
+        auxd['tipado'] = sim.tipado.name
+        auxd['mutabilidad'] = sim.mutabilidad
+        auxd['tipotoken'] = sim.tipotoken.name
+        simdic[cont] = auxd
+        cont += 1
+    return jsonify({"message":"SATISFACTORY ANALYSIS", "prints":Prints, "errores": TablaErrores})
 if __name__ == '__main__':
     app.run(debug=True, port=3000)

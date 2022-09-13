@@ -1,8 +1,8 @@
 <div class="header">
     <h1 class="titulo">PROYECTO 1 ORGANIZACIÓN DE LENGUAJES Y COMPILADORES 2 SECCION D</h1>
-    <h2 class="titulo"><b>CARLOS JAVIER MARTÍNEZ POLANCO 201709282</b></h2>
+    <h2 class="titulo"><b>CARLOS JAVIER MARTÍNEZ POLANCO 201709282 COMPILADOR RUST</b></h2>
     <nav class="navegacion">
-        <input style="display:none;" accept=".sc" type="file" (change)="CapturarArchivo($event, Tabulador.selectedIndex)" #archivo>
+        <input style="display:none;" accept=".rs" type="file" (change)="CapturarArchivo($event, Tabulador.selectedIndex)" #archivo>
         <button class="boton" mat-raised-button color="primary" (click)=AbrirArchivo(archivo)>Abrir</button>
         <button class="boton" mat-raised-button color="accent" (click)="GuardarArchivo(Tabulador.selectedIndex)">Guardar</button>
         <button class="boton" mat-raised-button color="primary" (click)="AgregarVentana()">Nueva Ventana</button>
@@ -44,6 +44,6 @@
 <div class="footer-app">
     <button  class="boton-foot" mat-raised-button color="primary">Reporte AST</button>
     <button  class="boton-foot" mat-raised-button color="accent" >Ver Tabla De Simbolos</button>
-    <button  class="boton-foot" mat-raised-button color="primary" >Ver Tabla De Errores</button>
+    <button  class="boton-foot" mat-raised-button color="primary" (click)="GenerarErrores()" >Ver Tabla De Errores</button>
 </div>
 <router-outlet></router-outlet>

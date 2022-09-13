@@ -2,6 +2,7 @@ from .access import Access
 from ..abstract.expresiones import *
 from ..abstract.retorno import *
 from enum import Enum, unique
+from ..reportes.TablaSim import *
 
 @unique
 class LogicOption(Enum):
@@ -34,5 +35,8 @@ class Logic(Expresion):
             resultado.value = not(leftvalue.value)
             resultado.tipado = Type.BOOL
         else:
-            print("ERROR SEMANTICO EN EXPRESION LOGICA")
+            auxer = "ERROR SEMANTICO EN EXPRESION LOGICA"
+            print(auxer)
+            TablaErrores.append(auxer)
+            Prints.append(auxer)
         return resultado

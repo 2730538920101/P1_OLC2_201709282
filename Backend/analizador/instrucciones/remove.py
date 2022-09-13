@@ -1,5 +1,6 @@
 from ..abstract.instrucciones import *
 from ..abstract.retorno import *
+from ..expresiones.access import *
 
 class Remove(Instruccion):
     def __init__(self, linea, columna, id, exp):
@@ -10,6 +11,8 @@ class Remove(Instruccion):
     def Ejecutar(self, environment):
         print("EJECUTANDO REMOVE AL VECTOR")
         try:
+            if isinstance(self.id, Access):
+                self.id = self.id.id
             var = environment.getVariable(self.id)
             if var != None:
                 if var.tipado == Type.VECTOR:
@@ -18,12 +21,27 @@ class Remove(Instruccion):
                         if val.tipado == Type.I64:
                             var.valor.values.pop(val.value)
                         else:
-                            print("ERROR SEMANTICO, EL INDICE DEBE SER DE TIPO I64")
+                            auxer = "ERROR SEMANTICO, EL INDICE DEBE SER DE TIPO I64"
+                            print(auxer)
+                            TablaErrores.append(auxer)
+                            Prints.append(auxer)
                     else:
-                        print("ERROR SEMANTICO, LA VARIABLE NO ES MUTABLE")
+                        auxer = "ERROR SEMANTICO, LA VARIABLE NO ES MUTABLE"
+                        print(auxer)
+                        TablaErrores.append(auxer)
+                        Prints.append(auxer)
                 else:
-                    print("ERROR SEMANTICO, LA VARIABLE NO ES UN VECTOR")
+                    auxer = "ERROR SEMANTICO, LA VARIABLE NO ES UN VECTOR"
+                    print(auxer)
+                    TablaErrores.append(auxer)
+                    Prints.append(auxer)
             else:
-                print("ERROR SEMANTICO, LA VARIABLE NO HA SIDO DECLARADA")
+                auxer = "ERROR SEMANTICO, LA VARIABLE NO HA SIDO DECLARADA"
+                print(auxer)
+                TablaErrores.append(auxer)
+                Prints.append(auxer)
         except:
-            print("ERROR SEMANTICO, VECTOR INVALIDO O EL INDICE SOBREPASA LA CAPACIDAD")
+            auxer = "ERROR SEMANTICO, VECTOR INVALIDO O EL INDICE SOBREPASA LA CAPACIDAD"
+            print(auxer)
+            TablaErrores.append(auxer)
+            Prints.append(auxer)

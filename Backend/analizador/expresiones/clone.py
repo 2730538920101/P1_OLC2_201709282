@@ -1,6 +1,7 @@
 from ..abstract.expresiones import *
 from ..abstract.retorno import *
 from .access import *
+from ..reportes.TablaSim import *
  
 class Clone(Expresion):
     def __init__(self, linea, columna, exp):
@@ -16,7 +17,13 @@ class Clone(Expresion):
                 aux.tipado = Type.STRING
                 aux.value = val.value
             else:
-                print("ERROR SEMANTICO, NO SE PUEDE HACER UNA COPIA DE LA EXPRESION, DEBE SER DE TIPO STRING")   
+                auxer = "ERROR SEMANTICO, NO SE PUEDE HACER UNA COPIA DE LA EXPRESION, DEBE SER DE TIPO STRING"
+                print(auxer)
+                TablaErrores.append(auxer)
+                Prints.append(auxer)   
             return aux
         except:
-            print("ERROR SEMANTICO, NO SE PUEDE COPIAR EL VALOR DE LA EXPRESION")
+            auxer = "ERROR SEMANTICO, NO SE PUEDE COPIAR EL VALOR DE LA EXPRESION"
+            print(auxer)
+            TablaErrores.append(auxer)
+            Prints.append(auxer)
