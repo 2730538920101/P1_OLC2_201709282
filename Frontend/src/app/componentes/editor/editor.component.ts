@@ -165,7 +165,21 @@ export class EditorComponent implements OnInit {
         this.console = this.console + element + "\n"
       });
     });
+  }
 
+  Traducir(index:any){
+    this.servicio.post('http://localhost:3000/traducir', this.tabs[index]).subscribe(result =>{
+      this.console = this.console + result.message + "\n"
+      this.PrintsArr = result.prints; 
+      this.TabErrores = result.errores; 
+      this.TabSimbolos = result.simbolos;
+      console.log(this.PrintsArr);
+      console.log(this.TabErrores);
+      console.log(this.TabSimbolos);
+      this.PrintsArr.forEach(element => {
+        this.console = this.console + element + "\n"
+      }); 
+    });
   }
 
   Limpiar(){

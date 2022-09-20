@@ -502,11 +502,19 @@ def p_lista_instrucciones(p):
     p[0] = [p[1]]
 
 
-def p_declaracion_struct(p):
+def p_declaracion_struct_1(p):
     '''
     declaracion_struct  : STRUCT IDENTIFICADOR LLAVEAP lista_atributos_declaracion LLAVECL
     '''
-    p[0] = Declaracion_struct(p.lineno(1), p.lexpos(1), p[2], p[4], Type.STRUCT)
+    p[0] = Declaracion_struct(p.lineno(1), p.lexpos(1), p[2], p[4], Type.STRUCT, False)
+
+
+def p_declaracion_struct_2(p):
+    '''
+    declaracion_struct  : PUB STRUCT IDENTIFICADOR LLAVEAP lista_atributos_declaracion LLAVECL
+    '''
+    p[0] = Declaracion_struct(p.lineno(1), p.lexpos(1), p[3], p[5], Type.STRUCT, True)
+
 
 def p_lista_atributos_struct_1(p):
     '''
@@ -666,11 +674,31 @@ def p_expresiones_2(p):
     '''
     p[0] = p[2]
 
-def p_expresiones_3(p):
+
+
+def p_identificadores_1(p):
     '''
-    expresiones :   IDENTIFICADOR
+    expresiones :   lista_identificadores
+                    
     '''
-    p[0] = Access(p.lineno(1), p.lexpos(1), p[1])
+    if len(p[1]) > 1:
+        p[0] = Struct_access(p.lineno(1), p.lexpos(1), p[1])
+    else:
+        p[0] = Access(p.lineno(1), p.lexpos(1), p[1].pop(0)) 
+
+def p_lista_identificadores_1(p):
+    '''
+    lista_identificadores   : lista_identificadores PUNTO IDENTIFICADOR
+    '''
+    p[1].append(p[3])
+    p[0] = p[1]
+
+
+def p_lista_identificadores_3(p):
+    '''
+    lista_identificadores   : IDENTIFICADOR 
+    '''
+    p[0] = [p[1]]
 
 ##ARRAY
 def p_expresiones_4(p):
@@ -1047,7 +1075,7 @@ def p_tipo_dato_1(p):
     elif p[1] == "struct":
         p[0] = Type.STRUCT
     else:
-        p[0] = p[1]
+        p[0] = Type.STRUCT
 
 def p_tipo_dato_2(p):
     '''

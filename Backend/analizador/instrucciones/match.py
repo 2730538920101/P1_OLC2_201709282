@@ -26,6 +26,8 @@ class Match(Instruccion):
                                 return element
                             elif element.tipado == Type.CONTINUE:
                                 continue
+                            else:
+                                return element
 
                 else:
                     element = c.code.Ejecutar(environment)
@@ -36,4 +38,6 @@ class Match(Instruccion):
                             return element
                         elif element.tipado == Type.CONTINUE:
                             continue
+                        else:
+                            return element
                     

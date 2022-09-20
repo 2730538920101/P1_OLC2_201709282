@@ -1,4 +1,3 @@
-import json
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from analizador.abstract.retorno import *
@@ -6,6 +5,9 @@ import analizador.gramatica
 from  analizador.symbol.environment import Entorno
 from analizador.symbol.array import *
 from analizador.reportes.TablaSim import *
+
+import traductor.gramatica
+
 
 
 
@@ -44,17 +46,17 @@ def Analizar():
     #        break      # No more input
     #    print(tok)   
     print("SATISFACTORY ANALYSIS")
-    simdic = {}
-    cont = 0
-    for sim in TablaSimbolos:
-        auxd = {}
-        auxd['id'] = sim.id
-        auxd['valor'] = sim.valor
-        auxd['tipado'] = sim.tipado.name
-        auxd['mutabilidad'] = sim.mutabilidad
-        auxd['tipotoken'] = sim.tipotoken.name
-        simdic[cont] = auxd
-        cont += 1
-    return jsonify({"message":"SATISFACTORY ANALYSIS", "prints":Prints, "errores": TablaErrores})
+    return jsonify({"message":"SATISFACTORY ANALYSIS"})
+
+
+@app.route('/traducir', methods = ['POST'])
+def Traducir():
+    aux = request.json
+    entrada = aux['code']
+    traductor.gramatica.parser.parse(entrada)            
+    print("SATISFACTORY ANALYSIS")
+    return jsonify({"message":"SATISFACTORY ANALYSIS"})
+
+
 if __name__ == '__main__':
     app.run(debug=True, port=3000)

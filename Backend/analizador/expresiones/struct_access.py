@@ -1,5 +1,7 @@
 from ..abstract.expresiones import *
 from ..abstract.retorno import *
+from ..reportes.TablaSim import *
+from ..symbol.struct import *
 
 class Struct_access(Expresion):
     def __init__(self, linea, columna, expl):
@@ -8,4 +10,11 @@ class Struct_access(Expresion):
 
     def Ejecutar(self,environment):
         print("EJECUTANDO STRUCT ACCESS")
+        
+         
+
+       
+            
+
+    
         

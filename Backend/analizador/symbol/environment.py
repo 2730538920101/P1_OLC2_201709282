@@ -30,7 +30,7 @@ class Entorno():
         self.variables[id] = sim2
         TablaSimbolos.append(sim2)
 
-    def guardarStructs(self, id, valor, tipado, mutabilidad = True, tipotoken = ClaseSym.STRUCT):
+    def guardarStructs(self, id, valor, tipado, mutabilidad = False, tipotoken = ClaseSym.STRUCT):
         env = self
         while(env != None):
             if id in env.structs:
