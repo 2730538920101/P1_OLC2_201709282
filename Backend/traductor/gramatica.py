@@ -78,7 +78,6 @@ tokens = [
     'OR',
     'AND',
     'DIF',
-    'DOLLAR',
     'FLECHA',
     'DOBFLECHA',
     'DOBIGUAL',
@@ -91,7 +90,7 @@ tokens = [
     'CARACTER'
 ]+ list(reservadas.values())
 
-t_DOLLAR = r'\$'
+
 t_MAS = r'\+'
 t_MENOS = r'[\-]'
 t_POR =	r'[\*]'
@@ -259,19 +258,9 @@ def p_lista_instrucciones_modulo_2(p):
 
 def p_declaracion_modulo(p):
     '''
-    declaracion_modulo  : encapsulamiento_modulo IDENTIFICADOR LLAVEAP lista_instrucciones_modulo LLAVECL
+    declaracion_modulo  : encapsulamiento MOD IDENTIFICADOR LLAVEAP lista_instrucciones_modulo LLAVECL
     '''
     
-def p_encapsulamiento_modulo_1(p):
-    '''
-    encapsulamiento_modulo  : PUB MOD
-    '''
-
-def p_encapsulamiento_modulo_2(p):
-    '''
-    encapsulamiento_modulo  : MOD
-    '''
-
 
 def p_funcion_main(p):
     '''
@@ -366,10 +355,6 @@ def p_generar_match(p):
     generar_match   : MATCH expresiones LLAVEAP lista_cases LLAVECL
     '''
     
-def p_lista_cases_1(p):
-    '''
-    lista_cases : lista_cases COMA cases 
-    '''
 
 def p_lista_cases_2(p):
     '''
@@ -388,7 +373,7 @@ def p_cases_1(p):
     
 def p_cases_2(p):
     '''
-    cases : lista_expresiones DOBFLECHA instruccion
+    cases : lista_expresiones DOBFLECHA instruccion 
     '''
     
 def p_cases_3(p):
@@ -404,20 +389,8 @@ def p_cases_4(p):
 
 def p_declaracion_struct_1(p):
     '''
-    declaracion_struct  : encapsulamiento_struct IDENTIFICADOR LLAVEAP lista_parametros LLAVECL
-    '''
-    
-def p_encapsulamieto_struct_1(p):
-    '''
-    encapsulamiento_struct  : STRUCT
-    '''
-
-
-def p_encapsulamieto_struct_2(p):
-    '''
-    encapsulamiento_struct  : PUB STRUCT
-    '''
-    
+    declaracion_struct  : encapsulamiento STRUCT IDENTIFICADOR LLAVEAP lista_parametros LLAVECL
+    '''    
     
 ##PARAMETROS FUNCION Y ATRIBUTOS STRUCT
 def p_lista_parametros_1(p):
@@ -432,32 +405,44 @@ def p_lista_parametros_2(p):
 
 def p_parametros_declaracion_funcion_1(p):
     '''
-    parametros_declaracion    :   IDENTIFICADOR DOSPUNTOS tipo_dato
+    parametros_declaracion    :  encapsulamiento IDENTIFICADOR DOSPUNTOS tipo_dato
     '''
     
+def p_encapsulamiento_atributo_1(p):
+    '''
+    encapsulamiento    : PUB
+    '''
+
+def p_encapsulamiento_atributo_2(p):
+    '''
+    encapsulamiento    : empty
+    '''
+
 
 ##FUNCION
 def p_declaracion_funciones_1(p):
     '''
-    declaracion_funciones   : encapsulamiento_funcion IDENTIFICADOR PARAP lista_parametros PARCL LLAVEAP lista_instrucciones LLAVECL
+    declaracion_funciones   : encapsulamiento FN IDENTIFICADOR PARAP lista_parametros PARCL LLAVEAP lista_instrucciones LLAVECL
     '''
     
 ##FUNCION
 def p_declaracion_funciones_2(p):
     '''
-    declaracion_funciones   : encapsulamiento_funcion IDENTIFICADOR PARAP lista_parametros PARCL FLECHA tipo_dato LLAVEAP lista_instrucciones LLAVECL
+    declaracion_funciones   : encapsulamiento FN IDENTIFICADOR PARAP lista_parametros PARCL FLECHA tipo_dato LLAVEAP lista_instrucciones LLAVECL
     '''
     
-def p_encapsulamiento_funcion_1(p):
+##FUNCION
+def p_declaracion_funciones_3(p):
     '''
-    encapsulamiento_funcion : FN
+    declaracion_funciones   : encapsulamiento FN IDENTIFICADOR PARAP  PARCL LLAVEAP lista_instrucciones LLAVECL
     '''
-
-def p_encapsulamiento_funcion_2(p):
+    
+##FUNCION
+def p_declaracion_funciones_4(p):
     '''
-    encapsulamiento_funcion : PUB FN
+    declaracion_funciones   : encapsulamiento FN IDENTIFICADOR PARAP  PARCL FLECHA tipo_dato LLAVEAP lista_instrucciones LLAVECL
     '''
-
+    
     
 def p_declaracion_mutabilidad_1(p):
     '''
@@ -536,17 +521,35 @@ def p_lista_identificadores_2(p):
     lista_identificadores   : IDENTIFICADOR lista_identificadores_modulo
     '''
 
+def p_lista_identificadores_3(p):
+    '''
+    lista_identificadores   : IDENTIFICADOR lista_indices lista_identificadores_modulo
+    '''
 
 
 def p_lista_modulo_struct_3(p):
     '''
-    lista_identificadores_modulo   : DOSPUNTOS DOSPUNTOS lista_identificadores
-                                   | PUNTO lista_identificadores
-                                   | llamada_funcion
-                                   | lista_indices lista_identificadores_modulo
-                                   |
-                                   
+    lista_identificadores_modulo   : DOSPUNTOS DOSPUNTOS lista_identificadores                                   
     '''
+
+def p_lista_modulo_struct_4(p):
+    '''
+    lista_identificadores_modulo   : PUNTO lista_identificadores                                   
+    '''
+
+def p_lista_modulo_struct_5(p):
+    '''
+    lista_identificadores_modulo   : llamada_funcion
+    '''
+
+
+
+def p_lista_modulo_struct_7(p):
+    '''
+    lista_identificadores_modulo   : empty
+    '''
+
+
 
     
 ##ARRAY INSTANCIA CON VALORES ASIGNADOS
